@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 @RequestMapping("/api/product")
 public class ProductController {
@@ -31,20 +34,39 @@ public class ProductController {
 	public ResponseEntity<Product> update(
 	  @PathVariable("id") String id,
 	  @RequestBody @Valid ProductDTO product) throws ResourceNotFoundException {
-		var body = service.update(id, product);
-		return ResponseEntity.status(HttpStatus.OK).body(body);
+		var entity = service.update(id, product);
+		entity.add(
+		  linkTo(
+			methodOn(ProductController.class).findById(id)).withSelfRel()
+		);
+
+		return ResponseEntity.status(HttpStatus.OK).body(entity);
 	}
 
 	@GetMapping(value = "/v1/{id}")
 	public ResponseEntity<Product> findById(@PathVariable("id") String id)
 	  throws ResourceNotFoundException {
-		var body = service.findById(id);
-		return ResponseEntity.status(HttpStatus.OK).body(body);
+		var entity = service.findById(id);
+		entity.add(
+		  linkTo(
+			methodOn(ProductController.class).findAll()).withSelfRel()
+		);
+
+		return ResponseEntity.status(HttpStatus.OK).body(entity);
 	}
 
 	@GetMapping(value = "/v1")
 	public ResponseEntity<List<Product>> findAll() {
 		List<Product> products = service.findAll();
+		products.forEach(item -> {
+			try {
+				item.add(
+				  linkTo(
+					methodOn(ProductController.class).findById(item.getId())).withSelfRel()
+				);
+			} catch (Exception ignored) {}
+		});
+
 		return ResponseEntity.status(HttpStatus.OK).body(products);
 	}
 
