@@ -7,6 +7,8 @@ import com.sb.products.model.dto.product.ProductDTO;
 import com.sb.products.repositories.ProductRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,7 +25,7 @@ public class ProductService {
 
 	public Product create(ProductDTO product) throws ResourceRequiredException {
 		if (product == null) {
-			logger.log(Level.WARNING, "Product cannot be null.");
+			logger.log(Level.WARNING, "[V1] Product cannot be null.");
 			throw new ResourceRequiredException();
 		}
 
@@ -31,7 +33,7 @@ public class ProductService {
 		BeanUtils.copyProperties(product, entity);
 		var createdProduct = repository.save(entity);
 
-		logger.log(Level.INFO, "Product created.");
+		logger.log(Level.INFO, "[V1] Product created.");
 
 		return createdProduct;
 	}
@@ -39,14 +41,14 @@ public class ProductService {
 	public Product update(String id, ProductDTO product) throws ResourceNotFoundException {
 		var entity = repository.findById(id).orElseThrow(
 		  () -> {
-			  logger.log(Level.WARNING, "Product not found.");
+			  logger.log(Level.WARNING, "[V1] Product not found.");
 			  return new ResourceNotFoundException(id);
 		  });
 
 		BeanUtils.copyProperties(product, entity);
 		repository.save(entity);
 
-		logger.log(Level.INFO, "Product updated.");
+		logger.log(Level.INFO, "[V1] Product updated.");
 
 		return entity;
 	}
@@ -54,28 +56,33 @@ public class ProductService {
 	public Product findById(String id) throws ResourceNotFoundException {
 		var entity = repository.findById(id).orElseThrow(
 		  () -> {
-			  logger.log(Level.WARNING, "Product not found.");
+			  logger.log(Level.WARNING, "[V1] Product not found.");
 			  return new ResourceNotFoundException(id);
 		  });
 
-		logger.log(Level.INFO, "Find product.");
+		logger.log(Level.INFO, "[V1] Find product.");
 
 		return entity;
 	}
 
 	public List<Product> findAll() {
-		logger.log(Level.INFO, "Find all products.");
+		logger.log(Level.INFO, "[V1] Find all products.");
 		return repository.findAll();
+	}
+
+	public Page<Product> findAll(Pageable pageable) {
+		logger.log(Level.INFO, "[V2] Find all products.");
+		return repository.findAll(pageable);
 	}
 
 	public void delete(String id) throws ResourceNotFoundException {
 		var entity = repository.findById(id).orElseThrow(
 		  () -> {
-			  logger.log(Level.WARNING, "Product not found.");
+			  logger.log(Level.WARNING, "[V1] Product not found.");
 			  return new ResourceNotFoundException(id);
 		  });
 
 		repository.delete(entity);
-		logger.log(Level.INFO, "Product deleted.");
+		logger.log(Level.INFO, "[V1] Product deleted.");
 	}
 }
