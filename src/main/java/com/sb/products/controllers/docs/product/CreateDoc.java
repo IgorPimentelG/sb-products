@@ -1,7 +1,7 @@
-package com.sb.products.controller.docs.product;
+package com.sb.products.controllers.docs.product;
 
 import com.sb.products.exceptions.ExceptionResponse;
-import com.sb.products.model.Product;
+import com.sb.products.models.Product;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,24 +15,20 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Operation(summary = "Find a product", description = "Returns the product", tags = {"Product"})
+@Operation(summary = "Register a product", description = "Returns the created product with id", tags = {"Product"})
 @ApiResponses({
-  @ApiResponse(responseCode = "200", description = "Product found successfully",
+  @ApiResponse(responseCode = "200", description = "Product created successfully",
 	content = {
 		@Content(mediaType = "application/json", schema = @Schema(implementation = Product.class))
   }),
-  @ApiResponse(responseCode = "400", description = "Params not accepted",
+  @ApiResponse(responseCode = "400", description = "Product with data not accepted",
 	content = {
 		@Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
   }),
-  @ApiResponse(responseCode = "404", description = "Product not found",
-	content = {
-	  @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
-	}),
   @ApiResponse(responseCode = "500", description = "An internal error occurred on the server",
     content = {
 		@Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
   })
 })
-public @interface FindByIdDoc {}
+public @interface CreateDoc {}
 

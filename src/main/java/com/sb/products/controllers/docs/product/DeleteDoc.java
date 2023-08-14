@@ -1,4 +1,4 @@
-package com.sb.products.controller.docs.product;
+package com.sb.products.controllers.docs.product;
 
 import com.sb.products.exceptions.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;

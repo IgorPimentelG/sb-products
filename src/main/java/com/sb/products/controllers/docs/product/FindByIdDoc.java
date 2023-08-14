@@ -1,7 +1,7 @@
-package com.sb.products.controller.docs.product;
+package com.sb.products.controllers.docs.product;
 
 import com.sb.products.exceptions.ExceptionResponse;
-import com.sb.products.model.Product;
+import com.sb.products.models.Product;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,13 +15,13 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Operation(summary = "Update a product", description = "Returns the updated product", tags = {"Product"})
+@Operation(summary = "Find a product", description = "Returns the product", tags = {"Product"})
 @ApiResponses({
-  @ApiResponse(responseCode = "200", description = "Product updated successfully",
+  @ApiResponse(responseCode = "200", description = "Product found successfully",
 	content = {
 		@Content(mediaType = "application/json", schema = @Schema(implementation = Product.class))
   }),
-  @ApiResponse(responseCode = "400", description = "Product with data not accepted",
+  @ApiResponse(responseCode = "400", description = "Params not accepted",
 	content = {
 		@Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
   }),
@@ -34,5 +34,5 @@ import java.lang.annotation.Target;
 		@Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
   })
 })
-public @interface UpdateDoc {}
+public @interface FindByIdDoc {}
 

@@ -1,4 +1,4 @@
-package com.sb.products.model.dto.product;
+package com.sb.products.models.dto.product;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;

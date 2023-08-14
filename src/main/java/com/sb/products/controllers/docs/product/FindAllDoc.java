@@ -1,8 +1,9 @@
-package com.sb.products.controller.docs.product;
+package com.sb.products.controllers.docs.product;
 
 import com.sb.products.exceptions.ExceptionResponse;
-import com.sb.products.model.Product;
+import com.sb.products.models.Product;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -15,13 +16,13 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Operation(summary = "Register a product", description = "Returns the created product with id", tags = {"Product"})
+@Operation(summary = "Find all product", description = "Returns all created already products", tags = {"Product"})
 @ApiResponses({
-  @ApiResponse(responseCode = "200", description = "Product created successfully",
+  @ApiResponse(responseCode = "200", description = "List of all products",
 	content = {
-		@Content(mediaType = "application/json", schema = @Schema(implementation = Product.class))
+		@Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Product.class)))
   }),
-  @ApiResponse(responseCode = "400", description = "Product with data not accepted",
+  @ApiResponse(responseCode = "400", description = "Params not accepted",
 	content = {
 		@Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
   }),
@@ -30,5 +31,5 @@ import java.lang.annotation.Target;
 		@Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
   })
 })
-public @interface CreateDoc {}
+public @interface FindAllDoc {}
 

@@ -1,10 +1,10 @@
-package com.sb.products.controller;
+package com.sb.products.controllers;
 
-import com.sb.products.controller.docs.product.*;
+import com.sb.products.controllers.docs.product.*;
 import com.sb.products.exceptions.ResourceNotFoundException;
 import com.sb.products.exceptions.ResourceRequiredException;
-import com.sb.products.model.Product;
-import com.sb.products.model.dto.product.ProductDTO;
+import com.sb.products.models.Product;
+import com.sb.products.models.dto.product.ProductDTO;
 import com.sb.products.services.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
