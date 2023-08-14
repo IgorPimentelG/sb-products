@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -103,6 +104,18 @@ public class ProductServiceTest {
 		assertNotNull(result);
 		assertArrayEquals(products.toArray(), result.toArray());
 		assertEquals(products.size(), result.size());
+	}
+
+	@Test
+	public void testFindAllWithEmptyProducts() throws Exception {
+		List<Product> products = new ArrayList<>();
+
+		when(repository.findAll()).thenReturn(products);
+
+		var result = service.findAll();
+
+		assertNotNull(result);
+		assertEquals(result.size(), 0);
 	}
 
 	@Test
