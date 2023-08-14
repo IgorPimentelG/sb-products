@@ -82,6 +82,22 @@ public class ProductServiceTest {
 	}
 
 	@Test
+	public void testUpdateWithNotFoundProduct() throws Exception {
+		ProductDTO productDto =  mock.createDto();
+
+		when(repository.findById(any())).thenReturn(Optional.empty());
+
+		Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
+			service.update("Any Identifier", productDto);
+		});
+
+		String expectedMessage = "Resource with id (Any Identifier) not exists.";
+		String resultMessage = exception.getMessage();
+
+		assertEquals(expectedMessage, resultMessage);
+	}
+
+	@Test
 	public void testFindProduct() throws Exception {
 		Product product = mock.createEntity();
 
