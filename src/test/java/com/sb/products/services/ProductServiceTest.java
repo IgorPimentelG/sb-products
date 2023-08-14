@@ -13,9 +13,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
@@ -59,5 +60,16 @@ public class ProductServiceTest {
 		String resultMessage = exception.getMessage();
 
 		assertEquals(expectedMessage, resultMessage);
+	}
+
+	@Test
+	public void testDeleteProduct() throws Exception {
+		Product product = mock.createEntity();
+
+		when(repository.findById(any())).thenReturn(Optional.of(product));
+
+		service.delete("Any Identifier");
+
+		verify(repository, times(1)).delete(product);
 	}
 }
