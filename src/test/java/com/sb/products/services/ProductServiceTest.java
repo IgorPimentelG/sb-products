@@ -1,5 +1,6 @@
 package com.sb.products.services;
 
+import com.sb.products.exceptions.ResourceNotFoundException;
 import com.sb.products.exceptions.ResourceRequiredException;
 import com.sb.products.mocks.MockProduct;
 import com.sb.products.models.Product;
@@ -71,5 +72,19 @@ public class ProductServiceTest {
 		service.delete("Any Identifier");
 
 		verify(repository, times(1)).delete(product);
+	}
+
+	@Test
+	public void testDeleteWithNotFoundProduct() throws Exception {
+		when(repository.findById(any())).thenReturn(Optional.empty());
+
+		Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
+			service.delete("Any Identifier");
+		});
+
+		String expectedMessage = "Resource with id (Any Identifier) not exists.";
+		String resultMessage = exception.getMessage();
+
+		assertEquals(expectedMessage, resultMessage);
 	}
 }
