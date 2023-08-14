@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -78,7 +79,7 @@ public class ProductServiceTest {
 	}
 
 	@Test
-	public void testFindWithNotFoundProduct() throws Exception {
+	public void testFindWithNotFoundProduct() {
 		when(repository.findById(any())).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
@@ -89,6 +90,19 @@ public class ProductServiceTest {
 		String resultMessage = exception.getMessage();
 
 		assertEquals(expectedMessage, resultMessage);
+	}
+
+	@Test
+	public void testFindAllProducts() {
+		List<Product> products = mock.createListEntity();
+
+		when(repository.findAll()).thenReturn(products);
+
+		var result = service.findAll();
+
+		assertNotNull(result);
+		assertArrayEquals(products.toArray(), result.toArray());
+		assertEquals(products.size(), result.size());
 	}
 
 	@Test
