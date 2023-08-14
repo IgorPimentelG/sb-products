@@ -8,3 +8,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+spring-doc:
+  swagger-ui:
+    path: /api-docs

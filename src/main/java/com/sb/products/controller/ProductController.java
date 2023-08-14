@@ -1,10 +1,12 @@
 package com.sb.products.controller;
 
+import com.sb.products.controller.docs.product.*;
 import com.sb.products.exceptions.ResourceNotFoundException;
 import com.sb.products.exceptions.ResourceRequiredException;
 import com.sb.products.model.Product;
 import com.sb.products.model.dto.product.ProductDTO;
 import com.sb.products.services.ProductService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,13 +21,16 @@ import java.util.List;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+
 @RestController
 @RequestMapping("/api/product")
+@Tag(name = "Product", description = "Endpoints for managing products")
 public class ProductController {
 
 	@Autowired
 	private ProductService service;
 
+	@CreateDoc
 	@PostMapping(value = "/v1")
 	public ResponseEntity<Product> create(@RequestBody @Valid ProductDTO product)
 	  throws ResourceRequiredException {
@@ -33,6 +38,7 @@ public class ProductController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(body);
 	}
 
+	@UpdateDoc
 	@PutMapping(value = "/v1/{id}")
 	public ResponseEntity<Product> update(
 	  @PathVariable("id") String id,
@@ -46,6 +52,7 @@ public class ProductController {
 		return ResponseEntity.status(HttpStatus.OK).body(entity);
 	}
 
+	@FindByIdDoc
 	@GetMapping(value = "/v1/{id}")
 	public ResponseEntity<Product> findById(@PathVariable("id") String id)
 	  throws ResourceNotFoundException {
@@ -58,21 +65,7 @@ public class ProductController {
 		return ResponseEntity.status(HttpStatus.OK).body(entity);
 	}
 
-	@GetMapping(value = "/v1")
-	public ResponseEntity<List<Product>> findAll() {
-		List<Product> products = service.findAll();
-		products.forEach(item -> {
-			try {
-				item.add(
-				  linkTo(
-					methodOn(ProductController.class).findById(item.getId())).withSelfRel()
-				);
-			} catch (Exception ignored) {}
-		});
-
-		return ResponseEntity.status(HttpStatus.OK).body(products);
-	}
-
+	@FindByIdDoc
 	@GetMapping(value = "/v2")
 	public ResponseEntity<Page<Product>> findAll(@PageableDefault(size = 5) Pageable pageable) {
 		Page<Product> products = service.findAll(pageable);
@@ -88,6 +81,23 @@ public class ProductController {
 		return ResponseEntity.status(HttpStatus.OK).body(products);
 	}
 
+	@FindAllDoc
+	@GetMapping(value = "/v1")
+	public ResponseEntity<List<Product>> findAll() {
+		List<Product> products = service.findAll();
+		products.forEach(item -> {
+			try {
+				item.add(
+				  linkTo(
+					methodOn(ProductController.class).findById(item.getId())).withSelfRel()
+				);
+			} catch (Exception ignored) {}
+		});
+
+		return ResponseEntity.status(HttpStatus.OK).body(products);
+	}
+
+	@DeleteDoc
 	@DeleteMapping(value = "/v1/{id}")
 	public ResponseEntity<?> delete(@PathVariable("id") String id)
 	  throws ResourceNotFoundException {
