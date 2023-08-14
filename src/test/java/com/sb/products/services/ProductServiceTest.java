@@ -64,6 +64,20 @@ public class ProductServiceTest {
 	}
 
 	@Test
+	public void testFindProduct() throws Exception {
+		Product product = mock.createEntity();
+
+		when(repository.findById(any())).thenReturn(Optional.of(product));
+
+		var result = service.findById("Any Identifier");
+
+		assertNotNull(result);
+		assertEquals(product.getName(), result.getName());
+		assertEquals(product.getDescription(), result.getDescription());
+		assertEquals(product.getPrice(), result.getPrice());
+	}
+
+	@Test
 	public void testDeleteProduct() throws Exception {
 		Product product = mock.createEntity();
 
@@ -75,7 +89,7 @@ public class ProductServiceTest {
 	}
 
 	@Test
-	public void testDeleteWithNotFoundProduct() throws Exception {
+	public void testDeleteWithNotFoundProduct() {
 		when(repository.findById(any())).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
