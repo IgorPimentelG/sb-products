@@ -38,7 +38,12 @@ public class ProductService {
 		return createdProduct;
 	}
 
-	public Product update(String id, ProductDTO product) throws ResourceNotFoundException {
+	public Product update(String id, ProductDTO product) throws ResourceNotFoundException, ResourceRequiredException {
+		if (product == null) {
+			logger.log(Level.WARNING, "[V1] Product cannot be null.");
+			throw new ResourceRequiredException();
+		}
+
 		var entity = repository.findById(id).orElseThrow(
 		  () -> {
 			  logger.log(Level.WARNING, "[V1] Product not found.");

@@ -42,7 +42,7 @@ public class ProductController {
 	@PutMapping(value = "/v1/{id}")
 	public ResponseEntity<Product> update(
 	  @PathVariable("id") String id,
-	  @RequestBody @Valid ProductDTO product) throws ResourceNotFoundException {
+	  @RequestBody @Valid ProductDTO product) throws ResourceNotFoundException, ResourceRequiredException {
 		var entity = service.update(id, product);
 		entity.add(
 		  linkTo(
