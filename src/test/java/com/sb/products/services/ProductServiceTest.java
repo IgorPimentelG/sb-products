@@ -4,6 +4,7 @@ import com.sb.products.exceptions.ResourceNotFoundException;
 import com.sb.products.exceptions.ResourceRequiredException;
 import com.sb.products.mocks.MockProduct;
 import com.sb.products.models.Product;
+import com.sb.products.models.dto.product.ProductDTO;
 import com.sb.products.repositories.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,6 +67,21 @@ public class ProductServiceTest {
 	}
 
 	@Test
+	public void testUpdateProduct() throws Exception {
+		Product product = mock.createEntity();
+		ProductDTO productDto =  mock.createDto();
+
+		when(repository.findById(any())).thenReturn(Optional.of(product));
+
+		var result = service.update("Any Identifier", productDto);
+
+		assertNotNull(result);
+		assertEquals(result.getName(), productDto.name());
+		assertEquals(result.getDescription(), productDto.description());
+		assertEquals(result.getPrice(), productDto.price());
+	}
+
+	@Test
 	public void testFindProduct() throws Exception {
 		Product product = mock.createEntity();
 
@@ -107,7 +123,7 @@ public class ProductServiceTest {
 	}
 
 	@Test
-	public void testFindAllWithEmptyProducts() throws Exception {
+	public void testFindAllWithEmptyProducts() {
 		List<Product> products = new ArrayList<>();
 
 		when(repository.findAll()).thenReturn(products);
