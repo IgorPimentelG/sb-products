@@ -1,8 +1,8 @@
-package com.sb.products.exceptions.handler;
+package com.sb.products.main.config.handles;
 
-import com.sb.products.exceptions.ExceptionResponse;
-import com.sb.products.exceptions.ResourceNotFoundException;
-import com.sb.products.exceptions.ResourceRequiredException;
+import com.sb.products.data.errors.ExceptionResponse;
+import com.sb.products.data.errors.NotFoundException;
+import com.sb.products.data.errors.RequiredException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -31,7 +31,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 		);
 	}
 
-	@ExceptionHandler(ResourceNotFoundException.class)
+	@ExceptionHandler(NotFoundException.class)
 	public final ResponseEntity<ExceptionResponse> handleNotFoundException(Exception ex, WebRequest request) {
 		return new ResponseEntity<>(
 		  responseFactory(ex, request),
@@ -39,7 +39,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 		);
 	}
 
-	@ExceptionHandler(ResourceRequiredException.class)
+	@ExceptionHandler(RequiredException.class)
 	public final ResponseEntity<ExceptionResponse> handleBadRequestException(Exception ex, WebRequest request) {
 		return new ResponseEntity<>(
 		  responseFactory(ex, request),
