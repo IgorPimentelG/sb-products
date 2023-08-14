@@ -1,5 +1,6 @@
 package com.sb.products.services;
 
+import com.sb.products.exceptions.ResourceRequiredException;
 import com.sb.products.mocks.MockProduct;
 import com.sb.products.models.Product;
 import com.sb.products.repositories.ProductRepository;
@@ -12,8 +13,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +36,7 @@ public class ProductServiceTest {
 	}
 
 	@Test
-	public void createProductTest() throws Exception {
+	public void testCreateProduct() throws Exception {
 		Product product = mock.createEntity();
 
 		when(repository.save(any())).thenReturn(product);
@@ -47,5 +47,17 @@ public class ProductServiceTest {
 		assertEquals(result.getName(), product.getName());
 		assertEquals(result.getDescription(), product.getDescription());
 		assertEquals(result.getPrice(), product.getPrice());
+	}
+
+	@Test
+	public void testCreateWithNullProduct() {
+		Exception exception = assertThrows(ResourceRequiredException.class, () -> {
+			service.create(null);
+		});
+
+		String expectedMessage = "Resource cannot be null.";
+		String resultMessage = exception.getMessage();
+
+		assertEquals(expectedMessage, resultMessage);
 	}
 }
