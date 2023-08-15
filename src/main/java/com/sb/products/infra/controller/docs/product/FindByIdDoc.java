@@ -1,6 +1,7 @@
-package com.sb.products.controllers.docs.product;
+package com.sb.products.infra.controller.docs.product;
 
-import com.sb.products.exceptions.ExceptionResponse;
+import com.sb.products.data.errors.ExceptionResponse;
+import com.sb.products.domain.entities.Product;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,17 +15,24 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Operation(summary = "Delete a product", description = "Doesn't return anything")
+@Operation(summary = "Find a product", description = "Returns the product", tags = {"Product"})
 @ApiResponses({
-  @ApiResponse(responseCode = "202", description = "Product deleted successfully", content = @Content),
-  @ApiResponse(responseCode = "404", description = "Product not found",
+  @ApiResponse(responseCode = "200", description = "Product found successfully",
+	content = {
+		@Content(mediaType = "application/json", schema = @Schema(implementation = Product.class))
+  }),
+  @ApiResponse(responseCode = "400", description = "Params not accepted",
 	content = {
 		@Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
   }),
+  @ApiResponse(responseCode = "404", description = "Product not found",
+	content = {
+	  @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+	}),
   @ApiResponse(responseCode = "500", description = "An internal error occurred on the server",
     content = {
 		@Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
   })
 })
-public @interface DeleteDoc {}
+public @interface FindByIdDoc {}
 
