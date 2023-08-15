@@ -34,9 +34,9 @@ public class ProductDatabaseGateway implements ProductGateway {
 		var entitySchema = mapper.toSchema(product);
 		var createdProduct = repository.save(entitySchema);
 
-		logger.log(Level.INFO, "[V1] Product created." + mapper.toEntity(entitySchema).getId());
+		logger.log(Level.INFO, "[V1] Product created.");
 
-		return mapper.toEntity(entitySchema);
+		return mapper.toEntity(createdProduct);
 	}
 
 	@Override
