@@ -4,22 +4,34 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 public class Product {
+
+	private String id;
 	private String barcode;
 	private String name;
 	private String description;
 	private BigDecimal price;
 
-	public Product(String name, String description, BigDecimal price, String barcode) {
+	public Product() {
+
+	}
+
+	public Product(String id, String name, String description, BigDecimal price, String barcode) {
+		setId(id);
 		setName(name);
 		setPrice(price);
 		setBarcode(barcode);
 		setDescription(description);
 	}
 
-	public Product(String name, BigDecimal price, String barcode) {
+	public Product(String id, String name, BigDecimal price, String barcode) {
+		setId(id);
 		setName(name);
 		setPrice(price);
 		setBarcode(barcode);
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public void setBarcode(String barcode) throws IllegalArgumentException {
@@ -51,6 +63,8 @@ public class Product {
 		}
 		this.price = price;
 	}
+
+	public String getId() { return id; }
 
 	public String getName() {
 		return name;

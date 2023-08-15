@@ -1,4 +1,4 @@
-package com.sb.products.models;
+package com.sb.products.infra.database.schemas;
 
 import jakarta.persistence.*;
 import org.springframework.hateoas.RepresentationModel;
@@ -10,7 +10,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "products")
-public class Product extends RepresentationModel<Product> implements Serializable {
+public class ProductSchema  extends RepresentationModel<ProductSchema> implements Serializable {
 
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -19,21 +19,22 @@ public class Product extends RepresentationModel<Product> implements Serializabl
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private String id;
 
-	@Column(nullable = false)
 	private String name;
 
 	@Column(nullable = true)
 	private String description;
 
-	@Column(nullable = false)
 	private BigDecimal price;
 
-	public Product() {}
+	private String barcode;
 
-	public Product(String name, String description, BigDecimal price) {
+	public ProductSchema() {}
+
+	public ProductSchema(String name, String description, double price, String barcode) {
 		this.name = name;
+		this.barcode = barcode;
 		this.description = description;
-		this.price = price;
+		this.price = BigDecimal.valueOf(price);
 	}
 
 	public String getId() {
@@ -44,31 +45,37 @@ public class Product extends RepresentationModel<Product> implements Serializabl
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public String getDescription() {
 		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 	public BigDecimal getPrice() {
 		return price;
 	}
 
+	public String getBarcode() { return barcode; }
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public void setPrice(BigDecimal price) {
 		this.price = price;
+	}
+
+	public void setBarcode(String barcode) {
+		this.barcode = barcode;
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		Product product = (Product) o;
+		ProductSchema product = (ProductSchema) o;
 		return Objects.equals(id, product.id);
 	}
 
@@ -76,4 +83,5 @@ public class Product extends RepresentationModel<Product> implements Serializabl
 	public int hashCode() {
 		return Objects.hash(id);
 	}
+
 }
