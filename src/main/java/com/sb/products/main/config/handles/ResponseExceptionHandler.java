@@ -1,6 +1,9 @@
 package com.sb.products.main.config.handles;
 
-import com.sb.products.data.errors.*;
+import com.sb.products.data.errors.ConflictException;
+import com.sb.products.data.errors.NotFoundException;
+import com.sb.products.data.errors.RequiredException;
+import com.sb.products.data.errors.UnauthorizedException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -76,7 +79,6 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 
 		ExceptionResponse response = new ExceptionResponse(
 		  "Invalid fields: " + Arrays.toString(errors.toArray()),
-		  "The data doesn't follow the pre-established rules",
 		  new Date()
 		);
 
@@ -86,7 +88,6 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 	private ExceptionResponse responseFactory(Exception ex, WebRequest request) {
 		return new ExceptionResponse(
 		  ex.getMessage(),
-		  request.getDescription(true),
 		  new Date()
 		);
 	}

@@ -1,7 +1,7 @@
 package com.sb.products.infra.controller.docs.product;
 
-import com.sb.products.data.errors.ExceptionResponse;
 import com.sb.products.domain.entities.Product;
+import com.sb.products.main.config.handles.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
