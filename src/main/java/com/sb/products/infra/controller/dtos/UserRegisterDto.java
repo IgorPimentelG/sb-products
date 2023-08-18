@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.Length;
 public record UserRegisterDto(
 	@NotBlank(message = "Full Name cannot be empty")
 	@NotNull(message = "Full Name cannot be empty")
+	@Length(min = 5, max = 100, message = "Full name must be at least 5 to a max of 100 characters")
 	String fullName,
 
 	@Email(message = "Invalid email address")
