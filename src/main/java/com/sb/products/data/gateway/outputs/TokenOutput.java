@@ -4,6 +4,8 @@ import java.util.Date;
 
 public record TokenOutput(
   String accessToken,
+  String refreshToken,
   Date createdAt,
-  Date expirationAt
+  Date expirationAccessToken,
+  Date expirationRefreshToken
 ) {}

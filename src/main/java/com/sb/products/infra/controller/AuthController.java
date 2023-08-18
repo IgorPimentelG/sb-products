@@ -1,10 +1,12 @@
 package com.sb.products.infra.controller;
 
 import com.sb.products.data.errors.ConflictException;
+import com.sb.products.data.errors.NotFoundException;
 import com.sb.products.data.errors.RequiredException;
 import com.sb.products.data.errors.UnauthorizedException;
 import com.sb.products.data.gateway.AuthGateway;
 import com.sb.products.data.gateway.factories.AuthGatewayFactory;
+import com.sb.products.data.gateway.outputs.AuthOutput;
 import com.sb.products.domain.entities.Permission;
 import com.sb.products.infra.controller.dtos.AuthDto;
 import com.sb.products.infra.controller.dtos.CredentialsDto;
@@ -17,10 +19,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -39,12 +38,8 @@ public class AuthController {
 	  throws UnauthorizedException {
 
 		var auth = gateway.signIn(credentials.email(), credentials.password());
-		var user = auth.user();
 
-		UserDto userBody = mapper.toDto(user);
-		userBody.permissions = user.getPermissions().stream().map(Permission::getRole).toList();
-
-		return ResponseEntity.status(HttpStatus.OK).body(new AuthDto(userBody, auth.token()));
+		return ResponseEntity.status(HttpStatus.OK).body(getAuthResponse(auth));
 	}
 
 	@PostMapping(value = "/manager/signup")
@@ -75,5 +70,28 @@ public class AuthController {
 		body.permissions = user.getPermissions().stream().map(Permission::getRole).toList();
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(body);
+	}
+
+	@PutMapping(value = "/refresh/{email}")
+	public ResponseEntity<AuthDto> refreshToken(
+	  @PathVariable("email") String email,
+	  @RequestHeader("Authorization") String refreshToken
+	) throws NotFoundException, UnauthorizedException {
+
+		if (refreshToken == null || refreshToken.isBlank() || refreshToken.isEmpty()) {
+			throw new UnauthorizedException();
+		}
+
+		var auth = gateway.refreshToken(email, refreshToken);
+
+		return ResponseEntity.status(HttpStatus.OK).body(getAuthResponse(auth));
+	}
+
+	private AuthDto getAuthResponse(AuthOutput auth) {
+		var user = auth.user();
+		UserDto body = mapper.toDto(user);
+		body.permissions = user.getPermissions().stream().map(Permission::getRole).toList();
+
+		return new AuthDto(body, auth.token());
 	}
 }

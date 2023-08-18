@@ -1,11 +1,11 @@
 package com.sb.products.infra.services;
 
 import com.sb.products.data.errors.ConflictException;
+import com.sb.products.data.errors.NotFoundException;
 import com.sb.products.data.errors.RequiredException;
 import com.sb.products.data.errors.UnauthorizedException;
 import com.sb.products.data.gateway.AuthGateway;
 import com.sb.products.data.gateway.outputs.AuthOutput;
-import com.sb.products.data.gateway.outputs.TokenOutput;
 import com.sb.products.domain.entities.User;
 import com.sb.products.infra.database.repositories.PermissionRepository;
 import com.sb.products.infra.database.repositories.UserRepository;
@@ -21,8 +21,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
 
 @Service
 public class AuthService implements UserDetailsService, AuthGateway {
@@ -47,17 +45,11 @@ public class AuthService implements UserDetailsService, AuthGateway {
 		try {
 			var user = new UsernamePasswordAuthenticationToken(email, password);
 			var auth = authManger.authenticate(user);
-			var token = tokenService.generateToken((UserSchema) auth.getPrincipal());
+			var token = tokenService.createToken((UserSchema) auth.getPrincipal());
 
 			var authenticatedUser = userRepository.findByEmail(email);
 
-			var tokenOutput = new TokenOutput(
-				token,
-				new Date(),
-				tokenService.getExpirationDate()
-			);
-
-			return new AuthOutput(mapper.toEntity(authenticatedUser), tokenOutput);
+			return new AuthOutput(mapper.toEntity(authenticatedUser), token);
 		} catch (AuthenticationException e) {
 			throw new UnauthorizedException();
 		}
@@ -86,6 +78,19 @@ public class AuthService implements UserDetailsService, AuthGateway {
 		var createdUser = userRepository.save(userSchema);
 
 		return mapper.toEntity(createdUser);
+	}
+
+	@Override
+	public AuthOutput refreshToken(String email, String refreshToken) throws NotFoundException {
+		var user = userRepository.findByEmail(email);
+
+		if (user == null) {
+			throw new NotFoundException(email);
+		}
+
+		var token = tokenService.refreshToken(refreshToken);
+
+		return new AuthOutput(mapper.toEntity(user), token);
 	}
 
 	@Override
