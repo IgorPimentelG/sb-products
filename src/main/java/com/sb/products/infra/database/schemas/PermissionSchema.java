@@ -20,6 +20,8 @@ public class PermissionSchema implements GrantedAuthority, Serializable {
 
   private String role;
 
+  public PermissionSchema() {}
+
   public PermissionSchema(int id, String role) {
     this.id = id;
     this.role = role;
