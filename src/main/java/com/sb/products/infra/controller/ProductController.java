@@ -8,8 +8,8 @@ import com.sb.products.domain.entities.Product;
 import com.sb.products.infra.controller.docs.product.*;
 import com.sb.products.infra.controller.dtos.ProductDto;
 import com.sb.products.infra.database.schemas.ProductSchema;
-import com.sb.products.infra.gateway.ProductDatabaseGateway;
 import com.sb.products.infra.mapper.ProductMapper;
+import com.sb.products.infra.services.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class ProductController {
 	private final ProductMapper mapper = ProductMapper.INSTANCE;
 
 	@Autowired
-	public ProductController(ProductDatabaseGateway databaseGateway) {
+	public ProductController(ProductService databaseGateway) {
 		this.gateway = ProductGatewayFactory.create(databaseGateway);
 	}
 

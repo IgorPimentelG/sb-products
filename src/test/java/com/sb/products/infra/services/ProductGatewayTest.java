@@ -1,4 +1,4 @@
-package com.sb.products.infra.gateway;
+package com.sb.products.infra.services;
 
 import com.sb.products.data.errors.NotFoundException;
 import com.sb.products.data.errors.RequiredException;
@@ -27,7 +27,7 @@ public class ProductGatewayTest {
 	MockProduct mock;
 
 	@InjectMocks
-	private ProductDatabaseGateway gateway;
+	private ProductService gateway;
 
 	@Mock
 	private ProductRepository repository;

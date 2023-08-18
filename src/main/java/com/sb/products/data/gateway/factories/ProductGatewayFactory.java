@@ -3,7 +3,7 @@ package com.sb.products.data.gateway.factories;
 import com.sb.products.data.errors.NotFoundException;
 import com.sb.products.data.errors.RequiredException;
 import com.sb.products.data.gateway.ProductGateway;
-import com.sb.products.data.usecases.*;
+import com.sb.products.data.usecases.product.*;
 import com.sb.products.domain.entities.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

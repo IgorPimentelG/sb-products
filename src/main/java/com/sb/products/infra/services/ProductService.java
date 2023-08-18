@@ -1,4 +1,4 @@
-package com.sb.products.infra.gateway;
+package com.sb.products.infra.services;
 
 import com.sb.products.data.errors.NotFoundException;
 import com.sb.products.data.errors.RequiredException;
@@ -17,12 +17,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Service
-public class ProductDatabaseGateway implements ProductGateway {
+public class ProductService implements ProductGateway {
 
 	@Autowired
 	private ProductRepository repository;
 	private final ProductMapper mapper = ProductMapper.INSTANCE;
-	private final Logger logger = Logger.getLogger(ProductDatabaseGateway.class.getName());
+	private final Logger logger = Logger.getLogger(ProductService.class.getName());
 
 	@Override
 	public Product create(Product product) throws RequiredException {

@@ -1,4 +1,4 @@
-package com.sb.products.data.usecases;
+package com.sb.products.data.usecases.product;
 
 import com.sb.products.data.errors.NotFoundException;
 import com.sb.products.data.gateway.ProductGateway;

@@ -1,4 +1,4 @@
-package com.sb.products.data.usecases;
+package com.sb.products.data.usecases.product;
 
 import com.sb.products.data.gateway.ProductGateway;
 import com.sb.products.domain.entities.Product;

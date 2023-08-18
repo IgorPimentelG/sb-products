@@ -1,24 +1,25 @@
-package com.sb.products.data.usecases;
+package com.sb.products.data.usecases.product;
 
+import com.sb.products.data.errors.NotFoundException;
 import com.sb.products.data.errors.RequiredException;
 import com.sb.products.data.gateway.ProductGateway;
 import com.sb.products.domain.entities.Product;
 import com.sb.products.domain.factories.ProductFactory;
 
-public class CreateProductUseCase {
+public class UpdateProductUseCase {
 
 	private final ProductGateway productGateway;
 
-	public CreateProductUseCase(ProductGateway productGateway) {
+	public UpdateProductUseCase(ProductGateway productGateway) {
 		this.productGateway = productGateway;
 	}
 
-	public Output execute(Input input) throws RequiredException {
+	public Output execute(Input input) throws RequiredException, NotFoundException {
 		var product = ProductFactory.create(
 		  input.id(), input.name(), input.description(), input.price(), input.barcode()
 		);
 
-		var result = productGateway.create(product);
+		var result = productGateway.update(input.id(), product);
 
 		return new Output(result);
 	}
