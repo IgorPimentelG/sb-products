@@ -10,10 +10,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -28,8 +32,8 @@ public class SecurityConfig {
 		  .csrf(AbstractHttpConfigurer::disable)
 		  .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 		  .authorizeHttpRequests(authorize -> authorize
-		      .requestMatchers(HttpMethod.POST, "/product").hasAnyRole("MANAGER", "ADMIN")
-		      .requestMatchers(HttpMethod.DELETE, "/product").hasAnyRole("MANAGER", "ADMIN")
+		      .requestMatchers(HttpMethod.POST, "/api/product/**").hasAnyRole("MANAGER", "ADMIN")
+		      .requestMatchers(HttpMethod.DELETE, "/api/product/**").hasAnyRole("MANAGER", "ADMIN")
 		      .requestMatchers(HttpMethod.POST, "/api/auth/manager/signup").hasRole("ADMIN")
 		      .requestMatchers(HttpMethod.POST, "/api/auth/common/signup").permitAll()
 		      .requestMatchers(HttpMethod.POST, "/api/auth/signin").permitAll()
@@ -48,6 +52,17 @@ public class SecurityConfig {
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
+		Map<String, PasswordEncoder> encoders = new HashMap<>();
+		Pbkdf2PasswordEncoder pbkdf2Encoder = new Pbkdf2PasswordEncoder(
+		  "",
+		  8,
+		  18500,
+		  Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA256
+		);
+		encoders.put("pbkdf2", pbkdf2Encoder);
+		DelegatingPasswordEncoder passwordEncoder = new DelegatingPasswordEncoder("pbkdf2", encoders);
+		passwordEncoder.setDefaultPasswordEncoderForMatches(passwordEncoder);
+
+		return passwordEncoder;
 	}
 }
