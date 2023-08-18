@@ -36,7 +36,7 @@ public abstract class UserFactory {
     String password,
     boolean isAccountNonExpired,
     boolean isAccountNonLocked,
-    boolean isCredentailsNonExpired,
+    boolean isCredentialsNonExpired,
     boolean isEnabled
   ) {
     return new User(
@@ -46,7 +46,7 @@ public abstract class UserFactory {
       password,
       isAccountNonExpired,
       isAccountNonLocked,
-      isCredentailsNonExpired,
+      isCredentialsNonExpired,
       isEnabled
     );
   }
