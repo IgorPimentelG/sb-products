@@ -16,6 +16,19 @@ public abstract class UserFactory {
     );
   }
 
+  public static User create(String fullName, String email, String password) {
+    return new User(
+      "",
+      fullName,
+      email,
+      password,
+      true,
+      true,
+      true,
+      true
+    );
+  }
+
   public static User create(
     String id,
     String fullName,

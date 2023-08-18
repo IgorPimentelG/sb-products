@@ -1,7 +1,9 @@
 package com.sb.products.infra.database.schemas;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import jakarta.persistence.*;
-import org.hibernate.annotations.ManyToAny;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -12,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
 @Table(name = "users")
 public class UserSchema implements Serializable, UserDetails {
 
@@ -24,18 +27,32 @@ public class UserSchema implements Serializable, UserDetails {
 
   private String fullName;
   private String email;
+
+  @JsonProperty(access = Access.WRITE_ONLY)
   private String password;
+
+  @Column(name = "account_non_expired")
   private boolean isAccountNonExpired;
+
+  @Column(name = "account_non_locked")
   private boolean isAccountNonLocked;
+
+  @Column(name = "credentials_non_expired")
   private boolean isCredentialsNonExpired;
+
+  @Column(name = "enabled")
   private boolean isEnabled;
 
-  @ManyToAny(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "user_permissions", 
     joinColumns = {@JoinColumn(name = "id_user")},
     inverseJoinColumns = {@JoinColumn(name = "id_permission")}
   )
   private final List<PermissionSchema> permissions;
+
+  public UserSchema() {
+    this.permissions = new ArrayList<>();
+  }
 
   public UserSchema(
       String id,
@@ -89,7 +106,8 @@ public class UserSchema implements Serializable, UserDetails {
   public void setEmail(String email) {
     this.email = email;
   }
-
+  
+  @JsonIgnore
   public String getPassword() {
     return this.password;
   }
