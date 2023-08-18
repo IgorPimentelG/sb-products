@@ -1,8 +1,6 @@
 package com.sb.products.main.config.handles;
 
-import com.sb.products.data.errors.ExceptionResponse;
-import com.sb.products.data.errors.NotFoundException;
-import com.sb.products.data.errors.RequiredException;
+import com.sb.products.data.errors.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -44,6 +42,22 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<>(
 		  responseFactory(ex, request),
 		  HttpStatus.BAD_REQUEST
+		);
+	}
+
+	@ExceptionHandler(ConflictException.class)
+	public final ResponseEntity<ExceptionResponse> handleConflictException(Exception ex, WebRequest request) {
+		return new ResponseEntity<>(
+		  responseFactory(ex, request),
+		  HttpStatus.CONFLICT
+		);
+	}
+
+	@ExceptionHandler(UnauthorizedException.class)
+	public final ResponseEntity<ExceptionResponse> handleUnauthorizedException(Exception ex, WebRequest request) {
+		return new ResponseEntity<>(
+		  responseFactory(ex, request),
+		  HttpStatus.UNAUTHORIZED
 		);
 	}
 
