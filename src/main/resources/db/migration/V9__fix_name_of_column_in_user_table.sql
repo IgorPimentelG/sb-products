@@ -1,0 +1,1 @@
+ALTER TABLE users RENAME COLUMN credentails_non_expired TO credentials_non_expired;
