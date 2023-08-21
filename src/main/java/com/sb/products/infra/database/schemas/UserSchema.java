@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import jakarta.persistence.*;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -16,7 +17,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "users")
-public class UserSchema implements Serializable, UserDetails {
+public class UserSchema extends RepresentationModel<UserSchema> implements Serializable, UserDetails {
 
   @Serial
   private static final long serialVersionUID = 1L;
