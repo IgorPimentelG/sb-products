@@ -21,6 +21,7 @@ public class ProductService implements ProductGateway {
 
 	@Autowired
 	private ProductRepository repository;
+
 	private final ProductMapper mapper = ProductMapper.INSTANCE;
 	private final Logger logger = Logger.getLogger(ProductService.class.getName());
 
@@ -75,7 +76,7 @@ public class ProductService implements ProductGateway {
 
 	@Override
 	public Page<Product> findAll(Pageable pageable) {
-		logger.log(Level.INFO, "[V2] Find all products.");
+		logger.log(Level.INFO, "[V1] Find all products.");
 		var products = repository.findAll(pageable);
 		var entityList = mapper.toListEntity(products.stream().toList());
 

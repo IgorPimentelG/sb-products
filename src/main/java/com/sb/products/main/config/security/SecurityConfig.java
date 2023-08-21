@@ -28,12 +28,19 @@ public class SecurityConfig {
 		  .csrf(AbstractHttpConfigurer::disable)
 		  .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 		  .authorizeHttpRequests(authorize -> authorize
-		      .requestMatchers(HttpMethod.POST, "/product").hasAnyRole("MANAGER", "ADMIN")
-		      .requestMatchers(HttpMethod.DELETE, "/product").hasAnyRole("MANAGER", "ADMIN")
+		      .requestMatchers(HttpMethod.POST, "/api/product/**").hasAnyRole("MANAGER", "ADMIN")
+		      .requestMatchers(HttpMethod.DELETE, "/api/product/**").hasAnyRole("MANAGER", "ADMIN")
 		      .requestMatchers(HttpMethod.POST, "/api/auth/manager/signup").hasRole("ADMIN")
-		      .requestMatchers(HttpMethod.POST, "/api/auth/common/signup").permitAll()
-		      .requestMatchers(HttpMethod.POST, "/api/auth/signin").permitAll()
+		      .requestMatchers(
+				  "/api/auth/common/signup",
+		          "/api/auth/signin"
+		      ).permitAll()
 		      .requestMatchers("/user").hasAnyRole("ADMIN")
+		      .requestMatchers(
+				  "swagger-ui/**",
+				  "/v3/api-docs/**",
+				  "/api/auth/refresh/**"
+		      ).permitAll()
 		      .anyRequest().authenticated()
 		  )
 		  .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
