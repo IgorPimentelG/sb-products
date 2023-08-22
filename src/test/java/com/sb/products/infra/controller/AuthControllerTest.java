@@ -111,7 +111,6 @@ public class AuthControllerTest extends AbstractIntegration {
 	@Order(3)
 	@DisplayName("should register a manager user")
 	void testRegisterManagerUser() {
-		CredentialsDto credentials = new CredentialsDto("admin@sb.com", "12345678");
 		RequestSpecification specification = loginAdmin();
 
 		var body = new UserRegisterDto(

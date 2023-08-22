@@ -1,14 +1,14 @@
 package com.sb.products.infra.controller;
 
-import com.sb.products.domain.entities.Product;
 import com.sb.products.infra.AbstractIntegration;
 import com.sb.products.infra.TestConstants;
 import com.sb.products.infra.controller.dtos.AuthDto;
 import com.sb.products.infra.controller.dtos.CredentialsDto;
-import com.sb.products.infra.controller.dtos.ProductDto;
+import com.sb.products.infra.controller.dtos.UserDto;
+import com.sb.products.infra.controller.dtos.UserUpdateDto;
 import com.sb.products.main.Application;
 import com.sb.products.main.config.handles.ExceptionResponse;
-import com.sb.products.mocks.MockProduct;
+import com.sb.products.mocks.MockUser;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
@@ -27,15 +27,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
   classes = Application.class
 )
 @TestMethodOrder(OrderAnnotation.class)
-public class ProductControllerTest extends AbstractIntegration {
+public class UserControllerTest extends AbstractIntegration {
 
-	static Product product;
-	static MockProduct mock;
+	static UserDto user;
+	static MockUser mock;
 	static RequestSpecification specification;
 
 	@BeforeAll
 	static void setup() {
-		mock = new MockProduct();
+		mock = new MockUser();
 	}
 
 	@Test
@@ -44,7 +44,7 @@ public class ProductControllerTest extends AbstractIntegration {
 	void authentication() {
 		CredentialsDto credentials = new CredentialsDto("admin@sb.com", "12345678");
 
-		var token = given()
+		var result = given()
 		  .basePath("/api/auth/signin")
 		  .port(TestConstants.SERVER_PORT)
 		  .contentType(TestConstants.CONTENT_TYPE_JSON)
@@ -53,11 +53,13 @@ public class ProductControllerTest extends AbstractIntegration {
 		  .post()
 		  .then()
 		  .statusCode(200)
-		  .extract().body().as(AuthDto.class).token();
+		  .extract().body().as(AuthDto.class);
+
+		user = result.user();
 
 		specification = new RequestSpecBuilder()
-		  .addHeader("Authorization", "Bearer " + token.accessToken())
-		  .setBasePath("/api/product/v1")
+		  .addHeader("Authorization", "Bearer " + result.token().accessToken())
+		  .setBasePath("/api/user/v1")
 		  .setPort(TestConstants.SERVER_PORT)
 		  .addFilter(new RequestLoggingFilter(LogDetail.ALL))
 		  .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
@@ -66,62 +68,13 @@ public class ProductControllerTest extends AbstractIntegration {
 
 	@Test
 	@Order(1)
-	@DisplayName("should create a new product")
-	void testCreateProduct() {
-		var productDto = mock.createDto();
-
+	@DisplayName("should find a user")
+	void testFindUser() {
 		var result = given()
 		  .spec(specification)
 		  .contentType(TestConstants.CONTENT_TYPE_JSON)
 		  .header("Origin", TestConstants.ORIGIN_LOCALHOST)
-		  .body(productDto)
-		  .when()
-		  .post()
-		  .then()
-		  .statusCode(201)
-		  .extract().body().as(Product.class);
-
-		product = result;
-
-		assertNotNull(result);
-	}
-
-	@Test
-	@Order(2)
-	@DisplayName("shouldn't create a new product with invalid fields")
-	void testCreateProductWithInvalidFields() {
-
-		var productDto = new ProductDto(
-		  "",
-		  "",
-		  0,
-		  ""
-		);
-
-		var result = given()
-		  .spec(specification)
-		  .contentType(TestConstants.CONTENT_TYPE_JSON)
-		  .header("Origin", TestConstants.ORIGIN_LOCALHOST)
-		  .body(productDto)
-		  .when()
-		  .post()
-		  .then()
-		  .statusCode(400)
-		  .extract().body().as(ExceptionResponse.class);
-
-		assertNotNull(result);
-		assertTrue(result.message().contains("Invalid fields"));
-	}
-
-	@Test
-	@Order(3)
-	@DisplayName("should find a product")
-	void testFindProduct() {
-		var result = given()
-		  .spec(specification)
-		  .contentType(TestConstants.CONTENT_TYPE_JSON)
-		  .header("Origin", TestConstants.ORIGIN_LOCALHOST)
-		  .pathParam("id", product.getId())
+		  .pathParam("id", user.id)
 		  .when()
 		  .get("{id}")
 		  .then()
@@ -132,9 +85,9 @@ public class ProductControllerTest extends AbstractIntegration {
 	}
 
 	@Test
-	@Order(4)
-	@DisplayName("shouldn't find a product when it doesn't exists")
-	void testFindProductThatDoesNotExists() {
+	@Order(2)
+	@DisplayName("shouldn't find a user when it doesn't exists")
+	void testFindUserThatDoesNotExists() {
 		var result = given()
 		  .spec(specification)
 		  .contentType(TestConstants.CONTENT_TYPE_JSON)
@@ -151,9 +104,9 @@ public class ProductControllerTest extends AbstractIntegration {
 	}
 
 	@Test
-	@Order(5)
-	@DisplayName("should list all products")
-	void testListAllProducts() {
+	@Order(3)
+	@DisplayName("should list all users")
+	void testListAllUsers() {
 		var result = given()
 		  .spec(specification)
 		  .contentType(TestConstants.CONTENT_TYPE_JSON)
@@ -168,23 +121,25 @@ public class ProductControllerTest extends AbstractIntegration {
 	}
 
 	@Test
-	@Order(6)
-	@DisplayName("should update a product")
-	void testUpdateProduct() {
+	@Order(4)
+	@DisplayName("should update a user")
+	void testUpdateUser() {
 
-		var productDto = new ProductDto(
+		var userDto = new UserUpdateDto(
 			"Updated Name",
-		  "Updated Description",
-		  2000.00,
-		  "68375758"
+		  "updated_password",
+		  true,
+		  true,
+		  true,
+		  true
 		);
 
 		var result = given()
 		  .spec(specification)
 		  .contentType(TestConstants.CONTENT_TYPE_JSON)
 		  .header("Origin", TestConstants.ORIGIN_LOCALHOST)
-		  .pathParam("id", product.getId())
-		  .body(productDto)
+		  .pathParam("id", user.id)
+		  .body(userDto)
 		  .when()
 		  .put("{id}")
 		  .then()
@@ -195,14 +150,17 @@ public class ProductControllerTest extends AbstractIntegration {
 	}
 
 	@Test
-	@Order(7)
-	@DisplayName("shouldn't update a product when it doesn't exists")
-	void testUpdateProductThatDoesNotExists() {
-		var productDto = new ProductDto(
+	@Order(6)
+	@DisplayName("shouldn't update a user when it doesn't exists")
+	void testUpdateUserThatDoesNotExists() {
+
+		var userDto = new UserUpdateDto(
 		  "Updated Name",
-		  "Updated Description",
-		  2000.00,
-		  "68375758"
+		  "updated_password",
+		  true,
+		  true,
+		  true,
+		  true
 		);
 
 		var result = given()
@@ -210,7 +168,7 @@ public class ProductControllerTest extends AbstractIntegration {
 		  .contentType(TestConstants.CONTENT_TYPE_JSON)
 		  .header("Origin", TestConstants.ORIGIN_LOCALHOST)
 		  .pathParam("id", "non-existent-id")
-		  .body(productDto)
+		  .body(userDto)
 		  .when()
 		  .put("{id}")
 		  .then()
@@ -222,22 +180,24 @@ public class ProductControllerTest extends AbstractIntegration {
 	}
 
 	@Test
-	@Order(8)
-	@DisplayName("shouldn't update a product with invalid fields")
+	@Order(7)
+	@DisplayName("shouldn't update user with invalid fields")
 	void testUpdateAProductWithInvalidFields() {
-		var productDto = new ProductDto(
+		var userDto = new UserUpdateDto(
 		  "",
 		  "",
-		  0,
-		  ""
+		  true,
+		  true,
+		  true,
+		  true
 		);
 
 		var result = given()
 		  .spec(specification)
 		  .contentType(TestConstants.CONTENT_TYPE_JSON)
 		  .header("Origin", TestConstants.ORIGIN_LOCALHOST)
-		  .pathParam("id", product.getId())
-		  .body(productDto)
+		  .pathParam("id", user.id)
+		  .body(userDto)
 		  .when()
 		  .put("{id}")
 		  .then()
@@ -249,36 +209,17 @@ public class ProductControllerTest extends AbstractIntegration {
 	}
 
 	@Test
-	@Order(9)
-	@DisplayName("should delete a product")
-	void testDeleteProduct() {
+	@Order(8)
+	@DisplayName("should delete a user")
+	void testDeleteUser() {
 		given()
 		  .spec(specification)
 		  .contentType(TestConstants.CONTENT_TYPE_JSON)
 		  .header("Origin", TestConstants.ORIGIN_LOCALHOST)
-		  .pathParam("id", product.getId())
+		  .pathParam("id", user.id)
 		  .when()
 		  .delete("{id}")
 		  .then()
 		  .statusCode(204);
-	}
-
-	@Test
-	@Order(10)
-	@DisplayName("shouldn't delete a product when it doesn't exists")
-	void testDeleteProductThatDoesNotExists() {
-		var result = given()
-		  .spec(specification)
-		  .contentType(TestConstants.CONTENT_TYPE_JSON)
-		  .header("Origin", TestConstants.ORIGIN_LOCALHOST)
-		  .pathParam("id", "non-existent-id")
-		  .when()
-		  .delete("{id}")
-		  .then()
-		  .statusCode(404)
-		  .extract().body().as(ExceptionResponse.class);
-
-		assertNotNull(result);
-		assertTrue(result.message().contains("Resource with id (non-existent-id) not exists."));
 	}
 }
