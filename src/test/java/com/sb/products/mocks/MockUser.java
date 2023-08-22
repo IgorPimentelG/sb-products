@@ -2,7 +2,6 @@ package com.sb.products.mocks;
 
 import com.sb.products.domain.entities.User;
 import com.sb.products.domain.factories.UserFactory;
-import com.sb.products.infra.controller.dtos.ProductDto;
 import com.sb.products.infra.database.schemas.UserSchema;
 
 import java.util.ArrayList;
@@ -16,15 +15,6 @@ public class MockUser {
 
 	public UserSchema createEntitySchema() {
 		return createEntitySchema(0);
-	}
-
-	public ProductDto createDto() {
-		return new ProductDto(
-		  "Any Name",
-		  "Any Description",
-		  2.500D,
-		  "594958"
-		);
 	}
 
 	public List<User> createListEntity() {

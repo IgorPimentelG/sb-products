@@ -22,7 +22,7 @@ public class MockProduct {
 		return new ProductDto(
 		  "Any Name",
 		  "Any Description",
-		  2.500D,
+		  2000,
 		  "594958"
 		);
 	}
