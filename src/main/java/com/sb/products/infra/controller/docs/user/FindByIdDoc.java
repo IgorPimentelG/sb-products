@@ -19,11 +19,11 @@ import java.lang.annotation.Target;
 @ApiResponses({
   @ApiResponse(responseCode = "200", description = "User found successfully",
 	content = {
-		@Content(mediaType = "application/json", schema = @Schema(implementation = User.class))
+	  @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))
   }),
   @ApiResponse(responseCode = "400", description = "Params not accepted",
 	content = {
-		@Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+	  @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
   }),
   @ApiResponse(responseCode = "404", description = "User not found",
 	content = {
@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
 	}),
   @ApiResponse(responseCode = "500", description = "An internal error occurred on the server",
     content = {
-		@Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+	  @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
   })
 })
 public @interface FindByIdDoc {}

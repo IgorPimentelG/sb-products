@@ -1,9 +1,6 @@
 package com.sb.products.infra.controller.dtos;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.Length;
 
 public record ProductDto(
@@ -18,7 +15,7 @@ public record ProductDto(
   @DecimalMin(value = "1.0", message = "Invalid Price: min price of $1.0")
   double price,
 
-  @NotNull(message = "Invalid Barcode: empty barcode")
+  @NotEmpty(message = "Invalid Barcode: empty barcode")
   @Pattern(regexp = "^[0-9]*$", message = "Invalid Barcode: only numbers")
   String barcode
 ) {}
