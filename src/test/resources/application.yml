@@ -1,0 +1,23 @@
+server:
+  port: 8888
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+spring-doc:
+  pathsToMatch:
+    - /api/auth/**
+    - /api/**/v1/**
+  swagger-ui:
+    path: /api-docs
+security:
+  jwt:
+    token:
+      secret-key: ${JWT_SECRET_KEY}
+      expire-length: 3600000
+cors:
+  origin-patterns: http://localhost:8080

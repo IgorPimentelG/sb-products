@@ -19,6 +19,8 @@
 		<dotenv.version>3.0.0</dotenv.version>
 		<mapstruct.version>1.5.5.Final</mapstruct.version>
 		<java-jwt.version>4.4.0</java-jwt.version>
+		<test-container.version>1.16.3</test-container.version>
+		<rest-assured.version>4.5.0</rest-assured.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -88,6 +90,18 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>${rest-assured.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>mysql</artifactId>
+			<version>${test-container.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
