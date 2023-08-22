@@ -2,6 +2,7 @@ package com.sb.products.data.gateway.factories;
 
 import com.sb.products.data.errors.NotFoundException;
 import com.sb.products.data.errors.RequiredException;
+import com.sb.products.data.errors.UnauthorizedException;
 import com.sb.products.data.gateway.UserGateway;
 import com.sb.products.data.usecases.user.DeleteUserUseCase;
 import com.sb.products.data.usecases.user.FindAllUsersUseCase;
@@ -29,12 +30,16 @@ public abstract class UserGatewayFactory {
 	  DeleteUserUseCase deleteUseCase
 	) implements UserGateway {
 		@Override
-		public User update(String id, User user) throws RequiredException, NotFoundException {
+		public User update(String id, User user)
+		  throws RequiredException, NotFoundException, UnauthorizedException {
 			return updateUseCase.execute(new UpdateUserUseCase.Input(
 			  id,
 			  user.getFullName(),
-			  user.getEmail(),
-			  user.getPassword()
+			  user.getPassword(),
+			  user.isEnabled(),
+			  user.isAccountNonLocked(),
+			  user.isCredentialsNonExpired(),
+			  user.isAccountNonExpired()
 			)).user();
 		}
 

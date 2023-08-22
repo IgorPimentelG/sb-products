@@ -50,4 +50,27 @@ public abstract class UserFactory {
       isEnabled
     );
   }
+
+  public static User create(
+    String id,
+    String fullName,
+    String password,
+    boolean isEnabled,
+    boolean isAccountNonLocked,
+    boolean isCredentialsNonExpired,
+    boolean isAccountNonExpired
+  ) {
+    var user = new User();
+
+    if (fullName != null) user.setFullName(fullName);
+    if (password != null) user.setPassword(password);
+
+    user.setId(id);
+    user.setEnabled(isEnabled);
+    user.setAccountNonLocked(isAccountNonLocked);
+    user.setAccountNonExpired(isAccountNonExpired);
+    user.setCredentialsNonExpired(isCredentialsNonExpired);
+
+    return user;
+  }
 }

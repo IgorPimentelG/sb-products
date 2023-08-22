@@ -18,6 +18,10 @@ public class User {
   private boolean isEnabled;
   private final List<Permission> permissions;
 
+  public User() {
+    this.permissions = new ArrayList<>();
+  }
+
   public User(
       String id,
       String fullName,
@@ -30,6 +34,26 @@ public class User {
     setId(id);
     setFullName(fullName);
     setEmail(email);
+    setPassword(password);
+    setAccountNonExpired(isAccountNonExpired);
+    setAccountNonLocked(isAccountNonLocked);
+    setCredentialsNonExpired(isCredentialsNonExpired);
+    setEnabled(isEnabled);
+
+    this.permissions = new ArrayList<>();
+  }
+
+  public User(
+    String id,
+    String fullName,
+    String password,
+    boolean isEnabled,
+    boolean isAccountNonLocked,
+    boolean isCredentialsNonExpired,
+    boolean isAccountNonExpired
+    ) {
+    setId(id);
+    setFullName(fullName);
     setPassword(password);
     setAccountNonExpired(isAccountNonExpired);
     setAccountNonLocked(isAccountNonLocked);

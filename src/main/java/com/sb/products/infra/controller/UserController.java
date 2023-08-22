@@ -2,9 +2,11 @@ package com.sb.products.infra.controller;
 
 import com.sb.products.data.errors.NotFoundException;
 import com.sb.products.data.errors.RequiredException;
+import com.sb.products.data.errors.UnauthorizedException;
 import com.sb.products.data.gateway.UserGateway;
 import com.sb.products.data.gateway.factories.UserGatewayFactory;
 import com.sb.products.domain.entities.User;
+import com.sb.products.domain.factories.UserFactory;
 import com.sb.products.infra.controller.docs.user.DeleteDoc;
 import com.sb.products.infra.controller.docs.user.FindAllDoc;
 import com.sb.products.infra.controller.docs.user.FindByIdDoc;
@@ -45,8 +47,19 @@ public class UserController {
 	public ResponseEntity<UserSchema> update(
 	  @PathVariable("id") String id,
 	  @RequestBody @Valid UserUpdateDto user,
-	  Pageable pageable) throws NotFoundException, RequiredException {
-		var entity = gateway.update(id, mapper.toEntity(user));
+	  Pageable pageable) throws NotFoundException, RequiredException, UnauthorizedException {
+
+		var userData = UserFactory.create(
+		  id,
+		  user.fullName(),
+		  user.password(),
+		  user.enabled(),
+		  user.accountNonLocked(),
+		  user.credentialsNonExpired(),
+		  user.accountNonExpired()
+		);
+
+		var entity = gateway.update(id, userData);
 		var entitySchema = mapper.toSchema(entity);
 		entitySchema.add(
 		  linkTo(

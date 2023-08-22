@@ -19,19 +19,23 @@ import java.lang.annotation.Target;
 @ApiResponses({
   @ApiResponse(responseCode = "200", description = "User updated successfully",
 	content = {
-		@Content(mediaType = "application/json", schema = @Schema(implementation = User.class))
+	  @Content(mediaType = "application/json", schema = @Schema(implementation = User.class))
   }),
   @ApiResponse(responseCode = "400", description = "User with data not accepted",
 	content = {
-		@Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+	  @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
   }),
+  @ApiResponse(responseCode = "401", description = "Invalid credentials to edit user",
+	content = {
+	  @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+	}),
   @ApiResponse(responseCode = "404", description = "User not found",
 	content = {
 	  @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
 	}),
   @ApiResponse(responseCode = "500", description = "An internal error occurred on the server",
     content = {
-		@Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
+	  @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class))
   })
 })
 public @interface UpdateDoc {}

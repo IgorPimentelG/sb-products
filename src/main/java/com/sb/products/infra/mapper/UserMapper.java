@@ -3,7 +3,6 @@ package com.sb.products.infra.mapper;
 import com.sb.products.domain.entities.User;
 import com.sb.products.infra.controller.dtos.UserDto;
 import com.sb.products.infra.controller.dtos.UserRegisterDto;
-import com.sb.products.infra.controller.dtos.UserUpdateDto;
 import com.sb.products.infra.database.schemas.UserSchema;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
@@ -20,10 +19,6 @@ public interface UserMapper {
 
 	@Mapping(target = "id", ignore = true)
 	User toEntity(UserRegisterDto dto);
-
-
-	@Mapping(target = "id", ignore = true)
-	User toEntity(UserUpdateDto dto);
 
 	@Mapping(target = "permissions", ignore = true)
 	UserDto toDto(User user);
