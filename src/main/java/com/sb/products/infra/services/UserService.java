@@ -7,6 +7,7 @@ import com.sb.products.data.gateway.UserGateway;
 import com.sb.products.domain.entities.User;
 import com.sb.products.infra.database.repositories.UserRepository;
 import com.sb.products.infra.mapper.UserMapper;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -100,5 +101,20 @@ public class UserService implements UserGateway {
 
 		repository.delete(entitySchema);
 		logger.log(Level.INFO, "[V1] User deleted.");
+	}
+
+	@Transactional
+	@Override
+	public User disable(String id) throws NotFoundException, UnauthorizedException {
+		repository.disableUser(id);
+
+		var entitySchema = repository.findById(id).orElseThrow(() -> {
+			logger.log(Level.WARNING, "[V1] User not found.");
+			return new NotFoundException(id);
+		});
+
+		logger.log(Level.INFO, "[V1] User disabled.");
+
+		return mapper.toEntity(entitySchema);
 	}
 }

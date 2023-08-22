@@ -12,4 +12,5 @@ public interface UserGateway {
 	User findById(String id) throws NotFoundException;
 	Page<User> findAll(Pageable pageable);
 	void delete(String id) throws NotFoundException;
+	User disable(String id) throws NotFoundException, UnauthorizedException;
 }

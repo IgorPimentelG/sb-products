@@ -32,6 +32,7 @@ public class SecurityConfig {
 		      .requestMatchers(HttpMethod.DELETE, "/api/product").hasAnyRole("MANAGER", "ADMIN")
 		      .requestMatchers(HttpMethod.POST, "/api/auth/manager").hasRole("ADMIN")
 		      .requestMatchers(HttpMethod.GET, "/api/user").hasRole("ADMIN")
+		      .requestMatchers(HttpMethod.PATCH, "/api/user").hasRole("ADMIN")
 		      .requestMatchers(HttpMethod.DELETE, "/api/user").hasRole("ADMIN")
 		      .requestMatchers(
 				  "/api/auth/common/signup",

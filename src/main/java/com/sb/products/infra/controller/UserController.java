@@ -7,10 +7,7 @@ import com.sb.products.data.gateway.UserGateway;
 import com.sb.products.data.gateway.factories.UserGatewayFactory;
 import com.sb.products.domain.entities.User;
 import com.sb.products.domain.factories.UserFactory;
-import com.sb.products.infra.controller.docs.user.DeleteDoc;
-import com.sb.products.infra.controller.docs.user.FindAllDoc;
-import com.sb.products.infra.controller.docs.user.FindByIdDoc;
-import com.sb.products.infra.controller.docs.user.UpdateDoc;
+import com.sb.products.infra.controller.docs.user.*;
 import com.sb.products.infra.controller.dtos.UserUpdateDto;
 import com.sb.products.infra.database.schemas.UserSchema;
 import com.sb.products.infra.mapper.UserMapper;
@@ -106,5 +103,19 @@ public class UserController {
 	public ResponseEntity<?> delete(@PathVariable("id") String id) throws NotFoundException {
 		gateway.delete(id);
 		return ResponseEntity.noContent().build();
+	}
+
+	@DisableDoc
+	@PatchMapping(value = "/v1/{id}")
+	public ResponseEntity<UserSchema> disable(@PathVariable("id") String id, Pageable pageable)
+	  throws NotFoundException, UnauthorizedException {
+		var entity = gateway.disable(id);
+		var entitySchema = mapper.toSchema(entity);
+		entitySchema.add(
+		  linkTo(
+			methodOn(UserController.class).findById(id, pageable)).withSelfRel()
+		);
+
+		return ResponseEntity.status(HttpStatus.OK).body(entitySchema);
 	}
 }
