@@ -190,4 +190,32 @@ public class UserGatewayTest {
 		assertEquals(expectedMessage, resultMessage);
 		verify(repository, times(0)).delete(any());
 	}
+
+	@Test
+	@DisplayName("should disable a user")
+	public void testDisableUser() throws Exception {
+		UserSchema userSchema = mock.createEntitySchema();
+
+		when(repository.findById(any())).thenReturn(Optional.of(userSchema));
+
+		gateway.disable("Any Identifier");
+
+		verify(repository, times(1)).disableUser(any());
+	}
+
+	@Test
+	@DisplayName("should throws NotFoundException when disable a non existent user")
+	public void testThrowsNotFoundExceptionWhenDisableNonExistentUser() {
+		when(repository.findById(any())).thenReturn(Optional.empty());
+
+		Exception exception = assertThrows(NotFoundException.class, () -> {
+			gateway.disable("Any Identifier");
+		});
+
+		String expectedMessage = "Resource with id (Any Identifier) not exists.";
+		String resultMessage = exception.getMessage();
+
+		assertEquals(expectedMessage, resultMessage);
+		verify(repository, times(0)).delete(any());
+	}
 }

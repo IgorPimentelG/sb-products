@@ -210,6 +210,42 @@ public class UserControllerTest extends AbstractIntegration {
 
 	@Test
 	@Order(8)
+	@DisplayName("should disable a user")
+	void testDisableUser() {
+		var result = given()
+		  .spec(specification)
+		  .contentType(TestConstants.CONTENT_TYPE_JSON)
+		  .header("Origin", TestConstants.ORIGIN_LOCALHOST)
+		  .pathParam("id", user.id)
+		  .when()
+		  .patch("{id}")
+		  .then()
+		  .statusCode(200);
+
+		assertNotNull(result);
+	}
+
+	@Test
+	@Order(9)
+	@DisplayName("shouldn't disable a user when it doesn't exists")
+	void testDeleteUserThatDoesNotExists() {
+		var result = given()
+		  .spec(specification)
+		  .contentType(TestConstants.CONTENT_TYPE_JSON)
+		  .header("Origin", TestConstants.ORIGIN_LOCALHOST)
+		  .pathParam("id", "non-existent-id")
+		  .when()
+		  .delete("{id}")
+		  .then()
+		  .statusCode(404)
+		  .extract().body().as(ExceptionResponse.class);
+
+		assertNotNull(result);
+		assertTrue(result.message().contains("Resource with id (non-existent-id) not exists."));
+	}
+
+	@Test
+	@Order(10)
 	@DisplayName("should delete a user")
 	void testDeleteUser() {
 		given()
