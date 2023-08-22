@@ -5,10 +5,15 @@ import com.sb.products.data.errors.RequiredException;
 import com.sb.products.data.gateway.UserGateway;
 import com.sb.products.data.gateway.factories.UserGatewayFactory;
 import com.sb.products.domain.entities.User;
+import com.sb.products.infra.controller.docs.user.DeleteDoc;
+import com.sb.products.infra.controller.docs.user.FindAllDoc;
+import com.sb.products.infra.controller.docs.user.FindByIdDoc;
+import com.sb.products.infra.controller.docs.user.UpdateDoc;
 import com.sb.products.infra.controller.dtos.UserUpdateDto;
 import com.sb.products.infra.database.schemas.UserSchema;
 import com.sb.products.infra.mapper.UserMapper;
 import com.sb.products.infra.services.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,7 +28,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
+@Tag(name = "User", description = "Endpoints for managing users")
 public class UserController {
 
 	private final UserGateway gateway;
@@ -34,6 +40,7 @@ public class UserController {
 		this.gateway = UserGatewayFactory.create(databaseGateway);
 	}
 
+	@UpdateDoc
 	@PutMapping(value = "/v1/{id}")
 	public ResponseEntity<UserSchema> update(
 	  @PathVariable("id") String id,
@@ -49,6 +56,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(entitySchema);
 	}
 
+	@FindByIdDoc
 	@GetMapping(value = "/v1/{id}")
 	public ResponseEntity<UserSchema> findById(@PathVariable("id") String id, Pageable pageable)
 	  throws NotFoundException {
@@ -62,6 +70,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(entitySchema);
 	}
 
+	@FindAllDoc
 	@GetMapping(value = "/v1")
 	public ResponseEntity<Page<UserSchema>> findAll(@PageableDefault(size = 5) Pageable pageable) {
 		Page<User> users = gateway.findAll(pageable);
@@ -79,6 +88,7 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(new PageImpl<>(listSchema));
 	}
 
+	@DeleteDoc
 	@DeleteMapping(value = "/v1/{id}")
 	public ResponseEntity<?> delete(@PathVariable("id") String id) throws NotFoundException {
 		gateway.delete(id);
