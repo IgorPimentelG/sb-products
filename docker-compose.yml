@@ -1,0 +1,49 @@
+version: '3.3'
+services:
+  mysql:
+    image: mysql:8.1
+    restart: always
+    environment:
+      MYSQL_DATABASE: sb_products
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - '33061:3306'
+    volumes:
+      - database:/var/lib/mysql
+
+  sonar-qube:
+    image: sonarqube:8.9-community
+    depends_on:
+      - sonar-db
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://sonar-db:5432/sonar
+      SONAR_JDBC_USERNAME: admin
+      SONAR_JDBC_PASSWORD: admin
+    volumes:
+      - sonarqube_data:/opt/SonarQube/data
+      - sonarqube_extensions:/opt/SonarQube/extensions
+      - sonarqube_logs:/opt/SonarQube/logs
+    ports:
+      - '9000:9000'
+
+  sonar-db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: sonar
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgresql:/var/lib/postgresql
+      - postgresql_data:/var/lib/postgresql/data
+
+volumes:
+  database:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:
+  postgresql:
+  postgresql_data:
