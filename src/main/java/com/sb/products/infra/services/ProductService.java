@@ -5,6 +5,7 @@ import com.sb.products.data.errors.RequiredException;
 import com.sb.products.data.gateway.ProductGateway;
 import com.sb.products.domain.entities.Product;
 import com.sb.products.infra.database.repositories.ProductRepository;
+import com.sb.products.infra.database.schemas.ProductSchema;
 import com.sb.products.infra.mapper.ProductMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,9 +76,18 @@ public class ProductService implements ProductGateway {
 	}
 
 	@Override
-	public Page<Product> findAll(Pageable pageable) {
+	public Page<Product> findAll(Pageable pageable, String name) {
 		logger.log(Level.INFO, "[V1] Find all products.");
-		var products = repository.findAll(pageable);
+
+		Page<ProductSchema> products;
+
+		if (name.equals("*") || name.isEmpty()) {
+			products = repository.findAll(pageable);
+		} else {
+			products = repository.findByName(name, pageable);
+		}
+
+
 		var entityList = mapper.toListEntity(products.stream().toList());
 
 		return new PageImpl<>(entityList);

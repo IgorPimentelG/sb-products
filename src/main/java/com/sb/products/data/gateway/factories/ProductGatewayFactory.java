@@ -56,8 +56,8 @@ public abstract class ProductGatewayFactory {
 		}
 
 		@Override
-		public Page<Product> findAll(Pageable pageable) {
-			return findAllUseCase.execute(new FindAllProductsUseCase.Input(pageable))
+		public Page<Product> findAll(Pageable pageable, String name) {
+			return findAllUseCase.execute(new FindAllProductsUseCase.Input(pageable, name))
 			  .products();
 		}
 

@@ -10,6 +10,6 @@ public interface ProductGateway {
 	Product create(Product product) throws RequiredException;
 	Product update(String id, Product product) throws RequiredException, NotFoundException;
 	Product findById(String id) throws NotFoundException;
-	Page<Product> findAll(Pageable pageable);
+	Page<Product> findAll(Pageable pageable, String name);
 	void delete(String id) throws NotFoundException;
 }

@@ -14,12 +14,12 @@ public class FindAllProductsUseCase {
 	}
 
 	public Output execute(Input input) {
-		var products = productGateway.findAll(input.pageable());
+		var products = productGateway.findAll(input.pageable(), input.name());
 
 		return new Output(products);
 	}
 
-	public record Input(Pageable pageable) {}
+	public record Input(Pageable pageable, String name) {}
 
 	public record Output(Page<Product> products) {}
 }

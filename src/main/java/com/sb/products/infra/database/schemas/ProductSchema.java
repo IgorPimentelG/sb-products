@@ -37,6 +37,10 @@ public class ProductSchema  extends RepresentationModel<ProductSchema> implement
 		this.price = BigDecimal.valueOf(price);
 	}
 
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	public String getId() {
 		return id;
 	}

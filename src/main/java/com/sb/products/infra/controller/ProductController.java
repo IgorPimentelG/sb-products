@@ -14,9 +14,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +35,9 @@ public class ProductController {
 
 	private final ProductGateway gateway;
 	private final ProductMapper mapper = ProductMapper.INSTANCE;
+
+	@Autowired
+	private PagedResourcesAssembler<ProductSchema> assembler;
 
 	@Autowired
 	public ProductController(ProductService databaseGateway) {
@@ -49,13 +56,13 @@ public class ProductController {
 	@PutMapping(value = "/v1/{id}")
 	public ResponseEntity<ProductSchema> update(
 	  @PathVariable("id") String id,
-	  @RequestBody @Valid ProductDto product,
-	  Pageable pageable) throws NotFoundException, RequiredException {
+	  @RequestBody @Valid ProductDto product
+	) throws NotFoundException, RequiredException {
 		var entity = gateway.update(id, mapper.toEntity(product));
 		var entitySchema = mapper.toSchema(entity);
 		entitySchema.add(
 		  linkTo(
-			methodOn(ProductController.class).findById(id, pageable)).withSelfRel()
+			methodOn(ProductController.class).findById(id)).withSelfRel()
 		);
 
 		return ResponseEntity.status(HttpStatus.OK).body(entitySchema);
@@ -63,13 +70,13 @@ public class ProductController {
 
 	@FindByIdDoc
 	@GetMapping(value = "/v1/{id}")
-	public ResponseEntity<ProductSchema> findById(@PathVariable("id") String id, Pageable pageable)
+	public ResponseEntity<ProductSchema> findById(@PathVariable("id") String id)
 	  throws NotFoundException {
 		var entity = gateway.findById(id);
 		var entitySchema = mapper.toSchema(entity);
 		entitySchema.add(
 		  linkTo(
-			methodOn(ProductController.class).findAll(pageable)).withSelfRel()
+			methodOn(ProductController.class).findAll(0, 10, "asc", "*")).withSelfRel()
 		);
 
 		return ResponseEntity.status(HttpStatus.OK).body(entitySchema);
@@ -77,19 +84,33 @@ public class ProductController {
 
 	@FindAllDoc
 	@GetMapping(value = "/v1")
-	public ResponseEntity<Page<ProductSchema>> findAll(@PageableDefault(size = 5) Pageable pageable) {
-		Page<Product> products = gateway.findAll(pageable);
-		var listSchema = mapper.toListSchema(products.stream().toList());
+	public ResponseEntity<PagedModel<EntityModel<ProductSchema>>> findAll(
+	  @RequestParam(value = "page", defaultValue = "0") int page,
+	  @RequestParam(value = "limit", defaultValue = "10") int limit,
+	  @RequestParam(value = "orderBy", defaultValue = "asc") String orderBy,
+	  @RequestParam(value = "name", defaultValue = "*") String name
+	) {
+		var sortDirection = "desc".equalsIgnoreCase(orderBy) ? Direction.DESC : Direction.ASC;
+
+		Pageable pageable = PageRequest.of(page, limit, Sort.by(sortDirection, "name"));
+		Page<Product> products = gateway.findAll(pageable, name);
+
+		var listSchema = products.map(mapper::toSchema);
 		listSchema.forEach(item -> {
 			try {
 				item.add(
 				  linkTo(
-					methodOn(ProductController.class).findById(item.getId(), pageable)).withSelfRel()
+					methodOn(ProductController.class).findById(item.getId())).withSelfRel()
 				);
 			} catch (Exception ignored) {}
 		});
 
-		return ResponseEntity.status(HttpStatus.OK).body(new PageImpl<>(listSchema));
+		var pagedModel = assembler.toModel(
+		  listSchema,
+		  linkTo(methodOn(ProductController.class).findAll(page, limit, orderBy, name)).withSelfRel()
+		);
+
+		return ResponseEntity.status(HttpStatus.OK).body(pagedModel);
 	}
 
 	@DeleteDoc
