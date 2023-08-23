@@ -162,9 +162,25 @@ public class ProductGatewayTest {
 
 		when(repository.findAll(pageable)).thenReturn(products);
 
-		var result = gateway.findAll(pageable);
+		var result = gateway.findAll(pageable, "*");
 
 		verify(repository, times(1)).findAll(pageable);
+		assertNotNull(result);
+		assertEquals(products.getContent().size(), result.getContent().size());
+	}
+
+	@Test
+	@DisplayName("should find all products filtered by name")
+	public void testFindAllProductsFilteredByName() {
+		Page<ProductSchema> products = new PageImpl<>(mock.createListEntitySchema());
+		Pageable pageable = PageRequest.of(0, 1);
+		var productName = products.getContent().get(0).getName();
+
+		when(repository.findByName(productName, pageable)).thenReturn(products);
+
+		var result = gateway.findAll(pageable, productName);
+
+		verify(repository, times(1)).findByName(productName, pageable);
 		assertNotNull(result);
 		assertEquals(products.getContent().size(), result.getContent().size());
 	}
@@ -177,7 +193,7 @@ public class ProductGatewayTest {
 
 		when(repository.findAll(pageable)).thenReturn(products);
 
-		var result = gateway.findAll(pageable);
+		var result = gateway.findAll(pageable, "*");
 
 		verify(repository, times(1)).findAll(pageable);
 		assertNotNull(result);
