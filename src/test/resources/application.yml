@@ -8,6 +8,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+    servlet:
+      multipart:
+        enabled: true
+        file-size:threshold: 2KB
+        max-file-size: 200MB
+        max-request-size: 215MB
 spring-doc:
   pathsToMatch:
     - /api/auth/**
@@ -21,3 +27,5 @@ security:
       expire-length: 3600000
 cors:
   origin-patterns: http://localhost:8080
+file:
+  upload-dir: /UploadDir

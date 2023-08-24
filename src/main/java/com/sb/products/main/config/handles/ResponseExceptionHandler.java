@@ -1,9 +1,6 @@
 package com.sb.products.main.config.handles;
 
-import com.sb.products.data.errors.ConflictException;
-import com.sb.products.data.errors.NotFoundException;
-import com.sb.products.data.errors.RequiredException;
-import com.sb.products.data.errors.UnauthorizedException;
+import com.sb.products.data.errors.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -61,6 +58,14 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<>(
 		  responseFactory(ex, request),
 		  HttpStatus.UNAUTHORIZED
+		);
+	}
+
+	@ExceptionHandler(FileStorageException.class)
+	public final ResponseEntity<ExceptionResponse> handleInternalErrorException(Exception ex, WebRequest request) {
+		return new ResponseEntity<>(
+		  responseFactory(ex, request),
+		  HttpStatus.INTERNAL_SERVER_ERROR
 		);
 	}
 
