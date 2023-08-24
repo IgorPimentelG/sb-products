@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ProductTest {
 
 	@Test
-	public void shouldCreateProduct() {
+	void shouldCreateProduct() {
 		var id = "any id";
 		var name = "any name";
 		var description = "any description";
@@ -28,7 +28,7 @@ public class ProductTest {
 	}
 
 	@Test
-	public void shouldCreateProductWithoutDescription() {
+	void shouldCreateProductWithoutDescription() {
 		var id = "any id";
 		var name = "any name";
 		var barcode = "594869584";
@@ -44,7 +44,7 @@ public class ProductTest {
 	}
 
 	@Test
-	public void shouldThrowsIllegalArgumentExceptionWhenBarcodeIsEmpty() {
+	void shouldThrowsIllegalArgumentExceptionWhenBarcodeIsEmpty() {
 		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
 			ProductFactory.create("any id", "any name", 2.500D, "");
 		});
@@ -56,7 +56,7 @@ public class ProductTest {
 	}
 
 	@Test
-	public void shouldThrowsIllegalArgumentExceptionWhenBarcodeHasCharacterNotNumber() {
+	void shouldThrowsIllegalArgumentExceptionWhenBarcodeHasCharacterNotNumber() {
 		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
 			ProductFactory.create("any id", "any name", 2.500D, "abc");
 		});
@@ -68,7 +68,7 @@ public class ProductTest {
 	}
 
 	@Test
-	public void shouldThrowsIllegalArgumentExceptionWhenNameIsEmpty() {
+	void shouldThrowsIllegalArgumentExceptionWhenNameIsEmpty() {
 		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
 			ProductFactory.create("any id", "", 2.500D, "53647664");
 		});
@@ -80,7 +80,7 @@ public class ProductTest {
 	}
 
 	@Test
-	public void shouldThrowsIllegalArgumentExceptionWhenPriceIsLessThanZero() {
+	void shouldThrowsIllegalArgumentExceptionWhenPriceIsLessThanZero() {
 		Exception exception = assertThrows(IllegalArgumentException.class, () -> {
 			ProductFactory.create("any id", "any name", 0, "53647664");
 		});

@@ -5,12 +5,11 @@ import com.sb.products.data.errors.RequiredException;
 import com.sb.products.data.errors.UnauthorizedException;
 import com.sb.products.data.gateway.UserGateway;
 import com.sb.products.domain.entities.User;
-import com.sb.products.infra.database.repositories.UserRepository;
 import com.sb.products.infra.mapper.UserMapper;
+import com.sb.products.infra.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,57 +38,54 @@ public class UserService implements UserGateway {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		var authenticatedUser = repository.findByEmail(auth.getName());
 
-		var entitySchema = repository.findById(id).orElseThrow(() -> {
+		var entity = repository.findById(id).orElseThrow(() -> {
 			logger.log(Level.WARNING, "[V1] User not found.");
 			return new NotFoundException(id);
 		});
 
-		if (!authenticatedUser.getId().equals(entitySchema.getId())) {
+		if (!authenticatedUser.getId().equals(entity.getId())) {
 			throw new UnauthorizedException();
 		}
 
 		if (user.getPassword() != null) {
-			entitySchema.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+			entity.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
 		}
 
 		if (user.getFullName() != null) {
-			entitySchema.setFullName(user.getFullName());
+			entity.setFullName(user.getFullName());
 		}
 
 		if (user.isEnabled() && user.isAccountNonExpired() && user.isAccountNonLocked()
 		  && user.isCredentialsNonExpired()) {
-			entitySchema.setEnabled(user.isEnabled());
-			entitySchema.setAccountNonExpired(user.isAccountNonExpired());
-			entitySchema.setAccountNonLocked(user.isAccountNonLocked());
-			entitySchema.setCredentialsNonExpired(user.isCredentialsNonExpired());
+			entity.setEnabled(user.isEnabled());
+			entity.setAccountNonExpired(user.isAccountNonExpired());
+			entity.setAccountNonLocked(user.isAccountNonLocked());
+			entity.setCredentialsNonExpired(user.isCredentialsNonExpired());
 		}
-		repository.save(entitySchema);
+		repository.save(entity);
 
 		logger.log(Level.INFO, "[V1] User updated.");
 
-		return mapper.toEntity(entitySchema);
+		return entity;
 	}
 
 	@Override
 	public User findById(String id) throws NotFoundException {
-		var entitySchema = repository.findById(id).orElseThrow(() -> {
+		var entity = repository.findById(id).orElseThrow(() -> {
 			logger.log(Level.WARNING, "[V1] User not found.");
 			return new NotFoundException(id);
 		});
 
 		logger.log(Level.INFO, "[V1] Find user.");
 
-		return mapper.toEntity(entitySchema);
+		return entity;
 	}
 
 	@Override
 	public Page<User> findAll(Pageable pageable) {
 		logger.log(Level.INFO, "[V1] Find all users.");
 
-		var users = repository.findAll(pageable);
-		var entityList = mapper.toListEntity(users.stream().toList());
-
-		return new PageImpl<>(entityList);
+		return repository.findAll(pageable);
 	}
 
 	@Override
@@ -108,13 +104,13 @@ public class UserService implements UserGateway {
 	public User disable(String id) throws NotFoundException, UnauthorizedException {
 		repository.disableUser(id);
 
-		var entitySchema = repository.findById(id).orElseThrow(() -> {
+		var entity = repository.findById(id).orElseThrow(() -> {
 			logger.log(Level.WARNING, "[V1] User not found.");
 			return new NotFoundException(id);
 		});
 
 		logger.log(Level.INFO, "[V1] User disabled.");
 
-		return mapper.toEntity(entitySchema);
+		return entity;
 	}
 }

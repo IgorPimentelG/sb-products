@@ -3,8 +3,7 @@ package com.sb.products.infra.services;
 import com.sb.products.data.errors.NotFoundException;
 import com.sb.products.data.errors.RequiredException;
 import com.sb.products.domain.entities.User;
-import com.sb.products.infra.database.repositories.UserRepository;
-import com.sb.products.infra.database.schemas.UserSchema;
+import com.sb.products.infra.repositories.UserRepository;
 import com.sb.products.mocks.MockUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,45 +31,44 @@ public class UserGatewayTest {
 	MockUser mock;
 
 	@InjectMocks
-	private UserService gateway;
+	UserService gateway;
 
 	@Mock
-	private UserRepository repository;
+	UserRepository repository;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		mock = new MockUser();
 		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test
 	@DisplayName("should update a user")
-	public void testUpdateUser() throws Exception {
+	void testUpdateUser() throws Exception {
 		User user = mock.createEntity();
-		UserSchema userSchema =  mock.createEntitySchema();
 
 		Authentication authentication = Mockito.mock(Authentication.class);
 		SecurityContext securityContext = Mockito.mock(SecurityContext.class);
 
 		when(securityContext.getAuthentication()).thenReturn(authentication);
-		when(repository.findByEmail(any())).thenReturn(userSchema);
+		when(repository.findByEmail(any())).thenReturn(user);
 		SecurityContextHolder.setContext(securityContext);
 
-		when(repository.findById(any())).thenReturn(Optional.of(userSchema));
+		when(repository.findById(any())).thenReturn(Optional.of(user));
 
 		var result = gateway.update("Any Identifier", user);
 
 		verify(repository, times(1)).findById(any());
 		verify(repository, times(1)).save(any());
 		assertNotNull(result);
-		assertEquals(result.getId(), userSchema.getId());
-		assertEquals(result.getFullName(), userSchema.getFullName());
-		assertEquals(result.getEmail(), userSchema.getEmail());
+		assertEquals(result.getId(), user.getId());
+		assertEquals(result.getFullName(), user.getFullName());
+		assertEquals(result.getEmail(), user.getEmail());
 	}
 
 	@Test
 	@DisplayName("should throws RequiredException when update a user with null data")
-	public void testThrowsNotFoundExceptionWhenUpdateNonExistentUser() {
+	void testThrowsNotFoundExceptionWhenUpdateNonExistentUser() {
 		User user =  mock.createEntity();
 
 		when(repository.findById(any())).thenReturn(Optional.empty());
@@ -89,7 +87,7 @@ public class UserGatewayTest {
 
 	@Test
 	@DisplayName("should throws RequiredException when update a user with null data")
-	public void testThrowsRequiredExceptionWhenUpdateWithNullUser() {
+	void testThrowsRequiredExceptionWhenUpdateWithNullUser() {
 		Exception exception = assertThrows(RequiredException.class, () -> {
 			gateway.update("Any Identifier", null);
 		});
@@ -104,8 +102,8 @@ public class UserGatewayTest {
 
 	@Test
 	@DisplayName("should find a user")
-	public void findUser() throws Exception {
-		UserSchema user = mock.createEntitySchema();
+	void findUser() throws Exception {
+		User user = mock.createEntity();
 
 		when(repository.findById(any())).thenReturn(Optional.of(user));
 
@@ -119,7 +117,7 @@ public class UserGatewayTest {
 
 	@Test
 	@DisplayName("should throws NotFoundException when find non existent user")
-	public void testThrowsNotFoundExceptionWhenFindNonExistentUser() {
+	void testThrowsNotFoundExceptionWhenFindNonExistentUser() {
 		when(repository.findById(any())).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(NotFoundException.class, () -> {
@@ -135,8 +133,8 @@ public class UserGatewayTest {
 
 	@Test
 	@DisplayName("should find all users")
-	public void testFindAllUsers() {
-		Page<UserSchema> users = new PageImpl<>(mock.createListEntitySchema());
+	void testFindAllUsers() {
+		Page<User> users = new PageImpl<>(mock.createListEntity());
 		Pageable pageable = PageRequest.of(0, 1);
 
 		when(repository.findAll(pageable)).thenReturn(users);
@@ -150,8 +148,8 @@ public class UserGatewayTest {
 
 	@Test
 	@DisplayName("should find all users with empty users")
-	public void testFindAllWithEmptyUsers() {
-		Page<UserSchema> users = new PageImpl<>(new ArrayList<>());
+	void testFindAllWithEmptyUsers() {
+		Page<User> users = new PageImpl<>(new ArrayList<>());
 		Pageable pageable = PageRequest.of(0, 1);
 
 		when(repository.findAll(pageable)).thenReturn(users);
@@ -165,10 +163,10 @@ public class UserGatewayTest {
 
 	@Test
 	@DisplayName("should delete a user")
-	public void testDeleteUser() throws Exception {
-		UserSchema userSchema = mock.createEntitySchema();
+	void testDeleteUser() throws Exception {
+		User user = mock.createEntity();
 
-		when(repository.findById(any())).thenReturn(Optional.of(userSchema));
+		when(repository.findById(any())).thenReturn(Optional.of(user));
 
 		gateway.delete("Any Identifier");
 
@@ -177,7 +175,7 @@ public class UserGatewayTest {
 
 	@Test
 	@DisplayName("should throws NotFoundException when delete a non existent user")
-	public void testThrowsNotFoundExceptionWhenDeleteNonExistentUser() {
+	void testThrowsNotFoundExceptionWhenDeleteNonExistentUser() {
 		when(repository.findById(any())).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(NotFoundException.class, () -> {
@@ -193,8 +191,8 @@ public class UserGatewayTest {
 
 	@Test
 	@DisplayName("should disable a user")
-	public void testDisableUser() throws Exception {
-		UserSchema userSchema = mock.createEntitySchema();
+	void testDisableUser() throws Exception {
+		User userSchema = mock.createEntity();
 
 		when(repository.findById(any())).thenReturn(Optional.of(userSchema));
 
@@ -205,7 +203,7 @@ public class UserGatewayTest {
 
 	@Test
 	@DisplayName("should throws NotFoundException when disable a non existent user")
-	public void testThrowsNotFoundExceptionWhenDisableNonExistentUser() {
+	void testThrowsNotFoundExceptionWhenDisableNonExistentUser() {
 		when(repository.findById(any())).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(NotFoundException.class, () -> {

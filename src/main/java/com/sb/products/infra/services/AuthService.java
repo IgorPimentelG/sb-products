@@ -7,10 +7,10 @@ import com.sb.products.data.errors.UnauthorizedException;
 import com.sb.products.data.gateway.AuthGateway;
 import com.sb.products.data.gateway.outputs.AuthOutput;
 import com.sb.products.domain.entities.User;
-import com.sb.products.infra.database.repositories.PermissionRepository;
-import com.sb.products.infra.database.repositories.UserRepository;
-import com.sb.products.infra.database.schemas.UserSchema;
+import com.sb.products.domain.errors.DuplicatePermissionException;
 import com.sb.products.infra.mapper.UserMapper;
+import com.sb.products.infra.repositories.PermissionRepository;
+import com.sb.products.infra.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -45,18 +45,19 @@ public class AuthService implements UserDetailsService, AuthGateway {
 		try {
 			var user = new UsernamePasswordAuthenticationToken(email, password);
 			var auth = authManger.authenticate(user);
-			var token = tokenService.createToken((UserSchema) auth.getPrincipal());
+			var token = tokenService.createToken((User) auth.getPrincipal());
 
 			var authenticatedUser = userRepository.findByEmail(email);
 
-			return new AuthOutput(mapper.toEntity(authenticatedUser), token);
+			return new AuthOutput(authenticatedUser, token);
 		} catch (AuthenticationException e) {
 			throw new UnauthorizedException();
 		}
 	}
 
 	@Override
-	public User signUp(User user, String role) throws ConflictException, RequiredException {
+	public User signUp(User user, String role)
+	  throws ConflictException, RequiredException, DuplicatePermissionException {
 		if (user == null) {
 			throw new RequiredException();
 		}
@@ -71,13 +72,10 @@ public class AuthService implements UserDetailsService, AuthGateway {
 
 		var permission = permissionRepository.findByRole(role);
 
-		var userSchema = mapper.toSchema(user);
-		userSchema.setPassword(encryptPassword);
-		userSchema.addPermission(permission);
+		user.setPassword(encryptPassword);
+		user.addPermission(permission);
 
-		var createdUser = userRepository.save(userSchema);
-
-		return mapper.toEntity(createdUser);
+		return userRepository.save(user);
 	}
 
 	@Override
@@ -90,7 +88,7 @@ public class AuthService implements UserDetailsService, AuthGateway {
 
 		var token = tokenService.refreshToken(refreshToken);
 
-		return new AuthOutput(mapper.toEntity(user), token);
+		return new AuthOutput(user, token);
 	}
 
 	@Override

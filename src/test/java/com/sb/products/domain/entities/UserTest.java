@@ -24,7 +24,6 @@ public class UserTest {
 		assertEquals(user.getPassword(), password);
 	}
 
-
 	@Test
 	void shouldCreateUserWithStatus() {
 		var id = "any id";

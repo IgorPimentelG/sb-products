@@ -1,6 +1,6 @@
 package com.sb.products.main.config.security;
 
-import com.sb.products.infra.database.repositories.UserRepository;
+import com.sb.products.infra.repositories.UserRepository;
 import com.sb.products.infra.services.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

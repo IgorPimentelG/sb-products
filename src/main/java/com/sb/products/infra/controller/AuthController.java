@@ -8,6 +8,7 @@ import com.sb.products.data.gateway.AuthGateway;
 import com.sb.products.data.gateway.factories.AuthGatewayFactory;
 import com.sb.products.data.gateway.outputs.AuthOutput;
 import com.sb.products.domain.entities.Permission;
+import com.sb.products.domain.errors.DuplicatePermissionException;
 import com.sb.products.infra.controller.docs.auth.CommonRegisterDoc;
 import com.sb.products.infra.controller.docs.auth.ManagerRegisterDoc;
 import com.sb.products.infra.controller.docs.auth.RefreshTokenDoc;
@@ -52,7 +53,7 @@ public class AuthController {
 	@ManagerRegisterDoc
 	@PostMapping(value = "/manager/signup")
 	public ResponseEntity<UserDto> signupManager(@RequestBody @Valid UserRegisterDto userDto)
-	  throws ConflictException, RequiredException {
+	  throws ConflictException, RequiredException, DuplicatePermissionException {
 
 		var user = gateway.signUp(
 		  mapper.toEntity(userDto),
@@ -68,7 +69,7 @@ public class AuthController {
 	@CommonRegisterDoc
 	@PostMapping(value = "/common/signup")
 	public ResponseEntity<UserDto> signupCommon(@RequestBody @Valid UserRegisterDto userDto)
-	  throws ConflictException, RequiredException {
+	  throws ConflictException, RequiredException, DuplicatePermissionException {
 
 		var user = gateway.signUp(
 			mapper.toEntity(userDto), 

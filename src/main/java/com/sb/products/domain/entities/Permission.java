@@ -1,11 +1,22 @@
 package com.sb.products.domain.entities;
 
+import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Permission {
+@Entity
+@Table(name = "permissions")
+public class Permission implements GrantedAuthority, Serializable {
 
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
+
   private String role;
+
+  public Permission() {}
 
   public Permission(int id, String role) {
     this.id = id;
@@ -26,6 +37,11 @@ public class Permission {
 
   public void setRole(String role) {
     this.role = role;
+  }
+
+  @Override
+  public String getAuthority() {
+    return role;
   }
 
   @Override

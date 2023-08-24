@@ -1,19 +1,32 @@
 package com.sb.products.domain.entities;
 
+import jakarta.persistence.*;
+import org.springframework.hateoas.RepresentationModel;
+
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public class Product {
+@Entity
+@Table(name = "products")
+public class Product extends RepresentationModel<Product> implements Serializable {
 
+	@Serial
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
 	private String id;
 	private String barcode;
 	private String name;
+
+	@Column(nullable = true)
 	private String description;
+
 	private BigDecimal price;
 
-	public Product() {
-
-	}
+	public Product() {}
 
 	public Product(String id, String name, String description, BigDecimal price, String barcode) {
 		setId(id);

@@ -4,13 +4,11 @@ import com.sb.products.data.errors.NotFoundException;
 import com.sb.products.data.errors.RequiredException;
 import com.sb.products.data.gateway.ProductGateway;
 import com.sb.products.domain.entities.Product;
-import com.sb.products.infra.database.repositories.ProductRepository;
-import com.sb.products.infra.database.schemas.ProductSchema;
 import com.sb.products.infra.mapper.ProductMapper;
+import com.sb.products.infra.repositories.ProductRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -33,12 +31,11 @@ public class ProductService implements ProductGateway {
 			throw new RequiredException();
 		}
 
-		var entitySchema = mapper.toSchema(product);
-		var createdProduct = repository.save(entitySchema);
+		var entity = repository.save(product);
 
 		logger.log(Level.INFO, "[V1] Product created.");
 
-		return mapper.toEntity(createdProduct);
+		return entity;
 	}
 
 	@Override
@@ -48,23 +45,23 @@ public class ProductService implements ProductGateway {
 			throw new RequiredException();
 		}
 
-		var entitySchema = repository.findById(id).orElseThrow(
+		var entity = repository.findById(id).orElseThrow(
 		  () -> {
 			  logger.log(Level.WARNING, "[V1] Product not found.");
 			  return new NotFoundException(id);
 		  });
 
-		BeanUtils.copyProperties(product, entitySchema);
-		repository.save(entitySchema);
+		BeanUtils.copyProperties(product, entity);
+		repository.save(entity);
 
 		logger.log(Level.INFO, "[V1] Product updated.");
 
-		return mapper.toEntity(entitySchema);
+		return entity;
 	}
 
 	@Override
 	public Product findById(String id) throws NotFoundException {
-		var entitySchema = repository.findById(id).orElseThrow(
+		var product = repository.findById(id).orElseThrow(
 		  () -> {
 			  logger.log(Level.WARNING, "[V1] Product not found.");
 			  return new NotFoundException(id);
@@ -72,14 +69,14 @@ public class ProductService implements ProductGateway {
 
 		logger.log(Level.INFO, "[V1] Find product.");
 
-		return mapper.toEntity(entitySchema);
+		return product;
 	}
 
 	@Override
 	public Page<Product> findAll(Pageable pageable, String name) {
 		logger.log(Level.INFO, "[V1] Find all products.");
 
-		Page<ProductSchema> products;
+		Page<Product> products;
 
 		if (name.equals("*") || name.isEmpty()) {
 			products = repository.findAll(pageable);
@@ -87,10 +84,7 @@ public class ProductService implements ProductGateway {
 			products = repository.findByName(name, pageable);
 		}
 
-
-		var entityList = mapper.toListEntity(products.stream().toList());
-
-		return new PageImpl<>(entityList);
+		return products;
 	}
 
 	@Override

@@ -9,14 +9,11 @@ import com.sb.products.domain.entities.User;
 import com.sb.products.domain.factories.UserFactory;
 import com.sb.products.infra.controller.docs.user.*;
 import com.sb.products.infra.controller.dtos.UserUpdateDto;
-import com.sb.products.infra.database.schemas.UserSchema;
-import com.sb.products.infra.mapper.UserMapper;
 import com.sb.products.infra.services.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -32,7 +29,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class UserController {
 
 	private final UserGateway gateway;
-	private final UserMapper mapper = UserMapper.INSTANCE;
 
 	@Autowired
 	public UserController(UserService databaseGateway) {
@@ -41,7 +37,7 @@ public class UserController {
 
 	@UpdateDoc
 	@PutMapping(value = "/v1/{id}")
-	public ResponseEntity<UserSchema> update(
+	public ResponseEntity<User> update(
 	  @PathVariable("id") String id,
 	  @RequestBody @Valid UserUpdateDto user,
 	  Pageable pageable) throws NotFoundException, RequiredException, UnauthorizedException {
@@ -57,35 +53,32 @@ public class UserController {
 		);
 
 		var entity = gateway.update(id, userData);
-		var entitySchema = mapper.toSchema(entity);
-		entitySchema.add(
+		entity.add(
 		  linkTo(
 			methodOn(UserController.class).findById(id, pageable)).withSelfRel()
 		);
 
-		return ResponseEntity.status(HttpStatus.OK).body(entitySchema);
+		return ResponseEntity.status(HttpStatus.OK).body(entity);
 	}
 
 	@FindByIdDoc
 	@GetMapping(value = "/v1/{id}")
-	public ResponseEntity<UserSchema> findById(@PathVariable("id") String id, Pageable pageable)
+	public ResponseEntity<User> findById(@PathVariable("id") String id, Pageable pageable)
 	  throws NotFoundException {
 		var entity = gateway.findById(id);
-		var entitySchema = mapper.toSchema(entity);
-		entitySchema.add(
+		entity.add(
 		  linkTo(
 			methodOn(UserController.class).findAll(pageable)).withSelfRel()
 		);
 
-		return ResponseEntity.status(HttpStatus.OK).body(entitySchema);
+		return ResponseEntity.status(HttpStatus.OK).body(entity);
 	}
 
 	@FindAllDoc
 	@GetMapping(value = "/v1")
-	public ResponseEntity<Page<UserSchema>> findAll(@PageableDefault(size = 5) Pageable pageable) {
+	public ResponseEntity<Page<User>> findAll(@PageableDefault(size = 5) Pageable pageable) {
 		Page<User> users = gateway.findAll(pageable);
-		var listSchema = mapper.toListSchema(users.stream().toList());
-		listSchema.forEach(item -> {
+		users.forEach(item -> {
 			try {
 				item.add(
 				  linkTo(
@@ -95,7 +88,7 @@ public class UserController {
 			}
 		});
 
-		return ResponseEntity.status(HttpStatus.OK).body(new PageImpl<>(listSchema));
+		return ResponseEntity.status(HttpStatus.OK).body(users);
 	}
 
 	@DeleteDoc
@@ -107,15 +100,14 @@ public class UserController {
 
 	@DisableDoc
 	@PatchMapping(value = "/v1/{id}")
-	public ResponseEntity<UserSchema> disable(@PathVariable("id") String id, Pageable pageable)
+	public ResponseEntity<User> disable(@PathVariable("id") String id, Pageable pageable)
 	  throws NotFoundException, UnauthorizedException {
 		var entity = gateway.disable(id);
-		var entitySchema = mapper.toSchema(entity);
-		entitySchema.add(
+		entity.add(
 		  linkTo(
 			methodOn(UserController.class).findById(id, pageable)).withSelfRel()
 		);
 
-		return ResponseEntity.status(HttpStatus.OK).body(entitySchema);
+		return ResponseEntity.status(HttpStatus.OK).body(entity);
 	}
 }

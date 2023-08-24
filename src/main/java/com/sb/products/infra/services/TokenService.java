@@ -5,8 +5,8 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.sb.products.data.gateway.outputs.TokenOutput;
-import com.sb.products.infra.database.repositories.UserRepository;
-import com.sb.products.infra.database.schemas.UserSchema;
+import com.sb.products.domain.entities.User;
+import com.sb.products.infra.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class TokenService {
 	@Autowired
 	private UserRepository userRepository;
 
-	public TokenOutput createToken(UserSchema user) {
+	public TokenOutput createToken(User user) {
 		Algorithm algorithm = getAlgorithm();
 		Date now = new Date();
 
@@ -59,7 +59,7 @@ public class TokenService {
 		return createToken(user);
 	}
 
-	private String getAccessToken(UserSchema user, Algorithm algorithm, Date expiration) {
+	private String getAccessToken(User user, Algorithm algorithm, Date expiration) {
 		return JWT.create()
 		  .withClaim("roles", user.getRoles())
 		  .withIssuer(getIssuerUrl())
@@ -68,7 +68,7 @@ public class TokenService {
 		  .sign(algorithm);
 	}
 
-	private String getRefreshToken(UserSchema user, Algorithm algorithm, Date now, Date expiration) {
+	private String getRefreshToken(User user, Algorithm algorithm, Date now, Date expiration) {
 		return JWT.create()
 		  .withClaim("roles", user.getRoles())
 		  .withIssuedAt(now)

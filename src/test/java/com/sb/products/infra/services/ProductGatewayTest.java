@@ -3,8 +3,7 @@ package com.sb.products.infra.services;
 import com.sb.products.data.errors.NotFoundException;
 import com.sb.products.data.errors.RequiredException;
 import com.sb.products.domain.entities.Product;
-import com.sb.products.infra.database.repositories.ProductRepository;
-import com.sb.products.infra.database.schemas.ProductSchema;
+import com.sb.products.infra.repositories.ProductRepository;
 import com.sb.products.mocks.MockProduct;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,21 +27,21 @@ public class ProductGatewayTest {
 	MockProduct mock;
 
 	@InjectMocks
-	private ProductService gateway;
+	ProductService gateway;
 
 	@Mock
-	private ProductRepository repository;
+	ProductRepository repository;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		mock = new MockProduct();
 		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test
 	@DisplayName("should create a product")
-	public void testCreateProduct() throws Exception {
-		ProductSchema product = mock.createEntitySchema();
+	void testCreateProduct() throws Exception {
+		Product product = mock.createEntity();
 
 		when(repository.save(any())).thenReturn(product);
 
@@ -58,7 +57,7 @@ public class ProductGatewayTest {
 
 	@Test
 	@DisplayName("should throws RequiredException when create a product with null data")
-	public void testThrowsRequiredExceptionWhenCreateWithNullProduct() {
+	void testThrowsRequiredExceptionWhenCreateWithNullProduct() {
 		Exception exception = assertThrows(RequiredException.class, () -> {
 			gateway.create(null);
 		});
@@ -72,25 +71,24 @@ public class ProductGatewayTest {
 
 	@Test
 	@DisplayName("should update a product")
-	public void testUpdateProduct() throws Exception {
+	void testUpdateProduct() throws Exception {
 		Product product = mock.createEntity();
-		ProductSchema productSchema =  mock.createEntitySchema();
 
-		when(repository.findById(any())).thenReturn(Optional.of(productSchema));
+		when(repository.findById(any())).thenReturn(Optional.of(product));
 
 		var result = gateway.update("Any Identifier", product);
 
 		verify(repository, times(1)).findById(any());
 		verify(repository, times(1)).save(any());
 		assertNotNull(result);
-		assertEquals(result.getName(), productSchema.getName());
-		assertEquals(result.getDescription(), productSchema.getDescription());
-		assertEquals(result.getPrice(), productSchema.getPrice());
+		assertEquals(result.getName(), product.getName());
+		assertEquals(result.getDescription(), product.getDescription());
+		assertEquals(result.getPrice(), product.getPrice());
 	}
 
 	@Test
 	@DisplayName("should throws NotFoundException when update a product that does not exists")
-	public void testThrowsNotFoundExceptionWhenUpdateNonExistentProduct() {
+	void testThrowsNotFoundExceptionWhenUpdateNonExistentProduct() {
 		Product product =  mock.createEntity();
 
 		when(repository.findById(any())).thenReturn(Optional.empty());
@@ -109,7 +107,7 @@ public class ProductGatewayTest {
 
 	@Test
 	@DisplayName("should throws NotFoundException when update a product that does not exists")
-	public void testThrowsRequiredExceptionWhenUpdateWithNullProduct() {
+	void testThrowsRequiredExceptionWhenUpdateWithNullProduct() {
 		Exception exception = assertThrows(RequiredException.class, () -> {
 			gateway.update("Any Identifier", null);
 		});
@@ -124,8 +122,8 @@ public class ProductGatewayTest {
 
 	@Test
 	@DisplayName("should find a product")
-	public void testFindProduct() throws Exception {
-		ProductSchema product = mock.createEntitySchema();
+	void testFindProduct() throws Exception {
+		Product product = mock.createEntity();
 
 		when(repository.findById(any())).thenReturn(Optional.of(product));
 
@@ -140,7 +138,7 @@ public class ProductGatewayTest {
 
 	@Test
 	@DisplayName("should throws NotFoundException when find a product that does not exists")
-	public void testThrowsNotFoundExceptionWhenFindNonExistentProduct() {
+	void testThrowsNotFoundExceptionWhenFindNonExistentProduct() {
 		when(repository.findById(any())).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(NotFoundException.class, () -> {
@@ -156,8 +154,8 @@ public class ProductGatewayTest {
 
 	@Test
 	@DisplayName("should find all products")
-	public void testFindAllProducts() {
-		Page<ProductSchema> products = new PageImpl<>(mock.createListEntitySchema());
+	void testFindAllProducts() {
+		Page<Product> products = new PageImpl<>(mock.createListEntity());
 		Pageable pageable = PageRequest.of(0, 1);
 
 		when(repository.findAll(pageable)).thenReturn(products);
@@ -171,8 +169,8 @@ public class ProductGatewayTest {
 
 	@Test
 	@DisplayName("should find all products filtered by name")
-	public void testFindAllProductsFilteredByName() {
-		Page<ProductSchema> products = new PageImpl<>(mock.createListEntitySchema());
+	void testFindAllProductsFilteredByName() {
+		Page<Product> products = new PageImpl<>(mock.createListEntity());
 		Pageable pageable = PageRequest.of(0, 1);
 		var productName = products.getContent().get(0).getName();
 
@@ -187,8 +185,8 @@ public class ProductGatewayTest {
 
 	@Test
 	@DisplayName("should find all product when does not exist products")
-	public void testFindAllWithEmptyProducts() {
-		Page<ProductSchema> products = new PageImpl<>(new ArrayList<>());
+	void testFindAllWithEmptyProducts() {
+		Page<Product> products = new PageImpl<>(new ArrayList<>());
 		Pageable pageable = PageRequest.of(0, 1);
 
 		when(repository.findAll(pageable)).thenReturn(products);
@@ -202,8 +200,8 @@ public class ProductGatewayTest {
 
 	@Test
 	@DisplayName("should delete a product")
-	public void testDeleteProduct() throws Exception {
-		ProductSchema product = mock.createEntitySchema();
+	void testDeleteProduct() throws Exception {
+		Product product = mock.createEntity();
 
 		when(repository.findById(any())).thenReturn(Optional.of(product));
 
@@ -214,7 +212,7 @@ public class ProductGatewayTest {
 
 	@Test
 	@DisplayName("should throws NotFoundException when delete a product that does not exists")
-	public void testThrowsNotFoundExceptionWhenDeleteNonExistentProduct() {
+	void testThrowsNotFoundExceptionWhenDeleteNonExistentProduct() {
 		when(repository.findById(any())).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(NotFoundException.class, () -> {

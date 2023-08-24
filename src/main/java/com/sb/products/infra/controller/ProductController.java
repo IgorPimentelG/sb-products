@@ -7,7 +7,6 @@ import com.sb.products.data.gateway.factories.ProductGatewayFactory;
 import com.sb.products.domain.entities.Product;
 import com.sb.products.infra.controller.docs.product.*;
 import com.sb.products.infra.controller.dtos.ProductDto;
-import com.sb.products.infra.database.schemas.ProductSchema;
 import com.sb.products.infra.mapper.ProductMapper;
 import com.sb.products.infra.services.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,7 +36,7 @@ public class ProductController {
 	private final ProductMapper mapper = ProductMapper.INSTANCE;
 
 	@Autowired
-	private PagedResourcesAssembler<ProductSchema> assembler;
+	private PagedResourcesAssembler<Product> assembler;
 
 	@Autowired
 	public ProductController(ProductService databaseGateway) {
@@ -54,37 +53,36 @@ public class ProductController {
 
 	@UpdateDoc
 	@PutMapping(value = "/v1/{id}")
-	public ResponseEntity<ProductSchema> update(
+	public ResponseEntity<Product> update(
 	  @PathVariable("id") String id,
 	  @RequestBody @Valid ProductDto product
 	) throws NotFoundException, RequiredException {
 		var entity = gateway.update(id, mapper.toEntity(product));
-		var entitySchema = mapper.toSchema(entity);
-		entitySchema.add(
+		entity.add(
 		  linkTo(
 			methodOn(ProductController.class).findById(id)).withSelfRel()
 		);
 
-		return ResponseEntity.status(HttpStatus.OK).body(entitySchema);
+		return ResponseEntity.status(HttpStatus.OK).body(entity);
 	}
 
 	@FindByIdDoc
 	@GetMapping(value = "/v1/{id}")
-	public ResponseEntity<ProductSchema> findById(@PathVariable("id") String id)
+	public ResponseEntity<Product> findById(@PathVariable("id") String id)
 	  throws NotFoundException {
 		var entity = gateway.findById(id);
-		var entitySchema = mapper.toSchema(entity);
-		entitySchema.add(
+		entity.add(
 		  linkTo(
-			methodOn(ProductController.class).findAll(0, 10, "asc", "*")).withSelfRel()
+			methodOn(ProductController.class)
+			  .findAll(0, 10, "asc", "*")).withSelfRel()
 		);
 
-		return ResponseEntity.status(HttpStatus.OK).body(entitySchema);
+		return ResponseEntity.status(HttpStatus.OK).body(entity);
 	}
 
 	@FindAllDoc
 	@GetMapping(value = "/v1")
-	public ResponseEntity<PagedModel<EntityModel<ProductSchema>>> findAll(
+	public ResponseEntity<PagedModel<EntityModel<Product>>> findAll(
 	  @RequestParam(value = "page", defaultValue = "0") int page,
 	  @RequestParam(value = "limit", defaultValue = "10") int limit,
 	  @RequestParam(value = "orderBy", defaultValue = "asc") String orderBy,
@@ -95,8 +93,7 @@ public class ProductController {
 		Pageable pageable = PageRequest.of(page, limit, Sort.by(sortDirection, "name"));
 		Page<Product> products = gateway.findAll(pageable, name);
 
-		var listSchema = products.map(mapper::toSchema);
-		listSchema.forEach(item -> {
+		products.forEach(item -> {
 			try {
 				item.add(
 				  linkTo(
@@ -106,8 +103,9 @@ public class ProductController {
 		});
 
 		var pagedModel = assembler.toModel(
-		  listSchema,
-		  linkTo(methodOn(ProductController.class).findAll(page, limit, orderBy, name)).withSelfRel()
+		  products,
+		  linkTo(methodOn(ProductController.class)
+		    .findAll(page + 1, limit, orderBy, name)).withRel("next")
 		);
 
 		return ResponseEntity.status(HttpStatus.OK).body(pagedModel);

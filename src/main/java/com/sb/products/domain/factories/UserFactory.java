@@ -17,16 +17,12 @@ public abstract class UserFactory {
   }
 
   public static User create(String fullName, String email, String password) {
-    return new User(
-      "",
-      fullName,
-      email,
-      password,
-      true,
-      true,
-      true,
-      true
-    );
+    var user = new User();
+    user.setFullName(fullName);
+    user.setEmail(email);
+    user.setPassword(password);
+
+    return user;
   }
 
   public static User create(

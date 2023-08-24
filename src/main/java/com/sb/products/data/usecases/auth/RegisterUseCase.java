@@ -4,6 +4,7 @@ import com.sb.products.data.errors.ConflictException;
 import com.sb.products.data.errors.RequiredException;
 import com.sb.products.data.gateway.AuthGateway;
 import com.sb.products.domain.entities.User;
+import com.sb.products.domain.errors.DuplicatePermissionException;
 import com.sb.products.domain.factories.UserFactory;
 
 public class RegisterUseCase {
@@ -15,7 +16,7 @@ public class RegisterUseCase {
 	}
 
 	public Output execute(Input input)
-	  throws ConflictException, RequiredException {
+	  throws ConflictException, RequiredException, DuplicatePermissionException {
 		var user = UserFactory.create(
 		  input.fullName(),
 		  input.email(),

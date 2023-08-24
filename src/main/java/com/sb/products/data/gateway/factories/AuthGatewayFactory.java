@@ -10,6 +10,7 @@ import com.sb.products.data.usecases.auth.AuthenticateUseCase;
 import com.sb.products.data.usecases.auth.RefreshTokenUseCase;
 import com.sb.products.data.usecases.auth.RegisterUseCase;
 import com.sb.products.domain.entities.User;
+import com.sb.products.domain.errors.DuplicatePermissionException;
 
 public abstract class AuthGatewayFactory {
 
@@ -35,7 +36,7 @@ public abstract class AuthGatewayFactory {
 
 		@Override
 		public User signUp(User user, String role)
-		  throws ConflictException, RequiredException {
+		  throws ConflictException, RequiredException, DuplicatePermissionException {
 			return registerUseCase.execute(new RegisterUseCase.Input(
 			  user.getFullName(),
 			  user.getEmail(),
