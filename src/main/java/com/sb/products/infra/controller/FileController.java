@@ -4,6 +4,9 @@ import com.sb.products.data.errors.FileStorageException;
 import com.sb.products.data.errors.NotFoundException;
 import com.sb.products.data.gateway.FileStorageGateway;
 import com.sb.products.data.gateway.factories.FileStorageGatewayFactory;
+import com.sb.products.infra.controller.docs.file.DownloadDoc;
+import com.sb.products.infra.controller.docs.file.UploadDoc;
+import com.sb.products.infra.controller.docs.file.UploadMultiplesDoc;
 import com.sb.products.infra.controller.dtos.UploadFileDto;
 import com.sb.products.infra.services.FileStorageService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,6 +36,7 @@ public class FileController {
 		this.gateway = FileStorageGatewayFactory.create(gateway);
 	}
 
+	@UploadDoc
 	@PostMapping(value = "/v1")
 	public ResponseEntity<UploadFileDto> uploadFile(@RequestParam("file") MultipartFile file)
 	  throws FileStorageException {
@@ -53,6 +57,7 @@ public class FileController {
 		return ResponseEntity.ok(body);
 	}
 
+	@UploadMultiplesDoc
 	@PostMapping(value = "/v1/upload-multiple")
 	public ResponseEntity<List<UploadFileDto>> uploadMultipleFile(@RequestParam("files") MultipartFile[] files)
 	  throws FileStorageException {
@@ -68,6 +73,7 @@ public class FileController {
 		return ResponseEntity.ok(body);
 	}
 
+	@DownloadDoc
 	@GetMapping(value = "/v1/download/{filename:.+}")
 	public ResponseEntity<Resource> downloadFile(
 	  @PathVariable String filename,
