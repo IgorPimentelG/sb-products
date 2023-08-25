@@ -1,6 +1,26 @@
 version: '3.3'
 services:
-  mysql:
+  app:
+    image: sb-products-api
+    command: nvm spring-boot:run
+    restart: always
+    build: .
+    env_file:
+      - .env
+    ports:
+      - '8080:8080'
+    environment: # Pass environment variables to the service
+      - DATABASE_HOST=api-db
+      - DATABASE_USER=admin
+      - DATABASE_PASSWORD=admin
+      - DATABASE_NAME=sb_products
+      - DATABASE_PORT=33061
+    depends_on:
+      - api-db
+    networks:
+      - app-network
+
+  api-db:
     image: mysql:8.1
     restart: always
     environment:
@@ -12,6 +32,8 @@ services:
       - '33061:3306'
     volumes:
       - database:/var/lib/mysql
+    networks:
+      - app-network
 
   sonar-qube:
     image: sonarqube:8.9-community
@@ -47,3 +69,7 @@ volumes:
   sonarqube_logs:
   postgresql:
   postgresql_data:
+
+networks:
+  app-network:
+    driver: bridge
