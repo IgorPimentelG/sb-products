@@ -29,3 +29,16 @@ cors:
   origin-patterns: http://localhost:8080
 file:
   upload-dir: /UploadDir
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'health,prometheus'
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true

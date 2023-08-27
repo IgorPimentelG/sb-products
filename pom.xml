@@ -22,6 +22,7 @@
 		<test-container.version>1.16.3</test-container.version>
 		<rest-assured.version>4.5.0</rest-assured.version>
 		<jacoco.version>0.8.10</jacoco.version>
+		<micrometer.version>1.11.2</micrometer.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -92,6 +93,15 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<version>${micrometer.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jacoco</groupId>

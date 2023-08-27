@@ -1,39 +1,39 @@
-version: '3.3'
+version: '3.8'
 services:
-  app:
-    image: sb-products-api
-    command: nvm spring-boot:run
-    restart: always
-    build: .
-    env_file:
-      - .env
-    ports:
-      - '8080:8080'
-    environment: # Pass environment variables to the service
-      - DATABASE_HOST=api-db
-      - DATABASE_USER=admin
-      - DATABASE_PASSWORD=admin
-      - DATABASE_NAME=sb_products
-      - DATABASE_PORT=33061
-    depends_on:
-      - api-db
-    networks:
-      - app-network
-
-  api-db:
+  app-db:
     image: mysql:8.1
     restart: always
     environment:
-      MYSQL_DATABASE: sb_products
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     ports:
-      - '33061:3306'
+      - '${DB_PORT}:3306'
     volumes:
       - database:/var/lib/mysql
     networks:
       - app-network
+
+  app:
+    image: sb-products-api
+    command: nvm spring-boot:run
+    restart: on-failure
+    build: ./app
+    env_file:
+      - .env
+    ports:
+      - '8080:8080'
+    environment:
+       SPRING_DATASOURCE_URL: jdbc:mysql://app-db:${DB_PORT}/${DB_DATABASE}?allowPublicKeyRetrieval=true&useSSL=false
+       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - app-db
+    networks:
+      - app-network
+    stdin_open: true
+    tty: true
 
   sonar-qube:
     image: sonarqube:8.9-community
@@ -62,6 +62,23 @@ services:
       - postgresql:/var/lib/postgresql
       - postgresql_data:/var/lib/postgresql/data
 
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - app-network
+    ports:
+      - '9090:9090'
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - '3000:3000'
+    networks:
+      - app-network
+
 volumes:
   database:
   sonarqube_data:
@@ -69,6 +86,8 @@ volumes:
   sonarqube_logs:
   postgresql:
   postgresql_data:
+  prometheus_data:
+  grafana_data:
 
 networks:
   app-network:
